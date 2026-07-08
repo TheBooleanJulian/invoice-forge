@@ -37,6 +37,15 @@ section{margin-bottom:26px;border:1px solid var(--line);border-radius:10px;backg
 section>.sec-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .sec-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal);font-weight:700}
 .sec-head h2{font-size:14px;font-weight:500;color:var(--txt)}
+
+/* ── doc-type toggle ── */
+.doctype-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:22px;
+  border:1px solid var(--line);border-radius:10px;padding:5px;background:var(--panel)}
+.doctype-toggle button{border:none;background:transparent;color:var(--txt-dim);font-family:var(--mono);
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 6px;border-radius:7px;font-weight:700}
+.doctype-toggle button:hover{color:var(--txt);border-color:transparent}
+.doctype-toggle button.active{background:var(--teal);color:#031514}
+.doctype-toggle button.active:hover{color:#031514}
 .sec-body{padding:16px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field{margin-bottom:12px}
@@ -169,6 +178,12 @@ input[type=file]{display:none}
 <div class="layout">
 <aside>
 
+  <div class="doctype-toggle" role="tablist" aria-label="Document type">
+    <button type="button" data-type="quotation" role="tab">Quotation</button>
+    <button type="button" data-type="invoice" role="tab" class="active">Invoice</button>
+    <button type="button" data-type="receipt" role="tab">Receipt</button>
+  </div>
+
   <!-- 01 · my details -->
   <section>
     <div class="sec-head"><span class="tag">01</span><h2>My details</h2><span class="spacer" style="flex:1"></span><span class="saved-flash" id="savedFlash">saved ✓</span></div>
@@ -197,22 +212,22 @@ input[type=file]{display:none}
 
   <!-- 02 · this invoice -->
   <section>
-    <div class="sec-head"><span class="tag">02</span><h2>This invoice</h2></div>
+    <div class="sec-head"><span class="tag">02</span><h2 id="sec02Title">This invoice</h2></div>
     <div class="sec-body">
       <div class="grid2">
-        <div class="field"><label for="invNo">Invoice no.</label><input type="text" id="invNo" class="mono-in"></div>
-        <div class="field"><label for="invDate">Invoice date</label><input type="date" id="invDate" class="mono-in"></div>
+        <div class="field"><label for="invNo" id="invNoLabel">Invoice no.</label><input type="text" id="invNo" class="mono-in"></div>
+        <div class="field"><label for="invDate" id="invDateLabel">Invoice date</label><input type="date" id="invDate" class="mono-in"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label for="billTo">Bill to (parent / client)</label><input type="text" id="billTo" placeholder="Mrs Tan"></div>
-        <div class="field"><label for="dueDate">Due date (optional)</label><input type="date" id="dueDate" class="mono-in"></div>
+        <div class="field"><label for="billTo" id="billToLabel">Bill to (parent / client)</label><input type="text" id="billTo" placeholder="Mrs Tan"></div>
+        <div class="field"><label for="dueDate" id="dueDateLabel">Due date (optional)</label><input type="date" id="dueDate" class="mono-in"></div>
       </div>
       <div class="grid2">
         <div class="field"><label for="student">Student (optional)</label><input type="text" id="student" placeholder="Kayden"></div>
         <div class="field"><label for="subject">Subject / level</label><input type="text" id="subject" placeholder="Sec 3 A-Math"></div>
       </div>
-      <div class="field"><label for="invNote">Note on invoice (optional)</label><input type="text" id="invNote" placeholder="e.g. July lessons · materials included"></div>
-      <div class="field">
+      <div class="field"><label for="invNote" id="invNoteLabel">Note on invoice (optional)</label><input type="text" id="invNote" placeholder="e.g. July lessons · materials included"></div>
+      <div class="field" id="payRefField">
         <label for="payRef">PayNow reference <span style="text-transform:none;opacity:.7">(auto-fills, editable)</span></label>
         <input type="text" id="payRef" class="mono-in" placeholder="e.g. Kayden2607">
       </div>
@@ -457,12 +472,39 @@ function money(n){ return 'S$' + (Math.round(n*100)/100).toLocaleString('en-SG',
 function hrs(n){ return (Math.round(n*100)/100).toString(); }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+/* ═════════ document types ═════════ */
+const DOC_TYPES = {
+  quotation:{ label:'Quotation', title:'QUOTATION', sec02:'This quotation',
+    invNoLabel:'Quote no.', invDateLabel:'Quote date', dueLabel:'Valid until (optional)',
+    billLabel:'Quoted to (parent / client)', noteLabel:'Note on quotation (optional)',
+    billLabelSheet:'Quoted to', dueLabelSheet:'Valid until', totalLabel:'Estimated total',
+    prefix:'TJ-Q-', seqKey:ym=>'tj-seq-Q-'+ym,
+    footerThanks:'Thank you for considering TutorJulian — happy to answer any questions.',
+    waHeader:'Quotation', waTotalWord:'Estimated total' },
+  invoice:{ label:'Invoice', title:'INVOICE', sec02:'This invoice',
+    invNoLabel:'Invoice no.', invDateLabel:'Invoice date', dueLabel:'Due date (optional)',
+    billLabel:'Bill to (parent / client)', noteLabel:'Note on invoice (optional)',
+    billLabelSheet:'Billed to', dueLabelSheet:'Due', totalLabel:'Total due',
+    prefix:'TJ-', seqKey:ym=>'tj-seq-'+ym,
+    footerThanks:'Thank you for learning with TutorJulian.',
+    waHeader:'Invoice', waTotalWord:'Total' },
+  receipt:{ label:'Receipt', title:'RECEIPT', sec02:'This receipt',
+    invNoLabel:'Receipt no.', invDateLabel:'Receipt date', dueLabel:'Date paid (optional)',
+    billLabel:'Received from (parent / client)', noteLabel:'Note on receipt (optional)',
+    billLabelSheet:'Received from', dueLabelSheet:'Paid on', totalLabel:'Total paid',
+    prefix:'TJ-R-', seqKey:ym=>'tj-seq-R-'+ym,
+    footerThanks:'Thank you for your payment — see you at the next lesson!',
+    waHeader:'Receipt', waTotalWord:'Amount received' }
+};
+
 /* ═════════ state ═════════ */
 const state = {
   lessons: [],            // {iso, timeText, hours}
   settings: { tutorName:'Julian Cheung', payNumber:'', defaultRate:70 },
   qr: null,
-  payRefAuto: ''          // last auto-generated PayNow reference, used to detect manual edits
+  payRefAuto: '',          // last auto-generated PayNow reference, used to detect manual edits
+  docType: 'invoice',
+  invNoAuto: ''            // last auto-generated doc number, used to detect manual edits
 };
 const $ = id => document.getElementById(id);
 
@@ -493,19 +535,28 @@ function showQrThumb(){
   else { t.classList.add('empty'); t.textContent='no QR yet'; $('qrRemoveBtn').style.display='none'; }
 }
 
-/* ═════════ invoice number ═════════ */
-async function suggestInvNo(){
+/* ═════════ document number ═════════ */
+async function suggestInvNo(type){
+  const cfg=DOC_TYPES[type];
   const now=new Date();
   const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
-  const raw = await store.get('tj-seq-'+ym);
+  const raw = await store.get(cfg.seqKey(ym));
   const seq = (parseInt(raw||'0',10)||0)+1;
-  return `TJ-${ym}-${String(seq).padStart(3,'0')}`;
+  return `${cfg.prefix}${ym}-${String(seq).padStart(3,'0')}`;
 }
 async function bumpInvNoIfAuto(){
+  const cfg=DOC_TYPES[state.docType];
   const now=new Date();
   const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
-  const m = new RegExp(`^TJ-${ym}-(\\d{3})$`).exec($('invNo').value.trim());
-  if(m) await store.set('tj-seq-'+ym, String(parseInt(m[1],10)));
+  const escapedPrefix = cfg.prefix.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const m = new RegExp(`^${escapedPrefix}${ym}-(\\d{3})$`).exec($('invNo').value.trim());
+  if(m) await store.set(cfg.seqKey(ym), String(parseInt(m[1],10)));
+}
+async function refreshInvNoDefault(){
+  const field=$('invNo');
+  const newAuto=await suggestInvNo(state.docType);
+  if(field.value.trim()==='' || field.value.trim()===state.invNoAuto){ field.value=newAuto; }
+  state.invNoAuto=newAuto;
 }
 
 /* ═════════ PayNow reference: <Student><YY><MM><DD if single lesson> ═════════ */
@@ -574,12 +625,13 @@ function refreshTotals(){
 
 /* ═════════ invoice sheet ═════════ */
 function renderSheet(){
+  const cfg=DOC_TYPES[state.docType];
   const s=state.settings, rate=parseFloat($('rate').value)||0;
   const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
   const total=totalH*rate;
   const invNo=$('invNo').value.trim()||'—';
   const invDate=$('invDate').value?fmtDateISO($('invDate').value):'—';
-  const due=$('dueDate').value?fmtDateISO($('dueDate').value):'Upon receipt';
+  const due=$('dueDate').value?fmtDateISO($('dueDate').value):(state.docType==='invoice'?'Upon receipt':'—');
   const billTo=$('billTo').value.trim(), student=$('student').value.trim(), subject=$('subject').value.trim();
   const note=$('invNote').value.trim();
   const name=$('tutorName').value.trim()||'Julian Cheung';
@@ -594,39 +646,30 @@ function renderSheet(){
       <td class="mono r">${money(L.hours*rate)}</td></tr>`).join('')
     : `<tr class="empty-row"><td colspan="5">No lessons yet — paste your calendar entries and hit Parse.</td></tr>`;
 
-  $('sheet').innerHTML=`
-    <div class="inv-top">
+  let payBoxHtml;
+  if(state.docType==='quotation'){
+    payBoxHtml = `
+    <div class="pay">
       <div>
-        <div class="wordmark"><span class="t">TUTOR</span>JULIAN</div>
-        <div class="from-block">
-          <span class="nm">${esc(name)}</span><br>
-          Private Tuition · Singapore${phone?`<br>${esc(phone)}`:''}
-        </div>
+        <div class="pay-title">VALIDITY</div>
+        <div class="pay-det">This quotation is valid until <b>${due==='—'?'further notice':due}</b>.</div>
+        <div class="pay-note">Rates, scheduling and availability are not guaranteed after this date. Happy to confirm and convert this to an invoice once you're ready to proceed.</div>
       </div>
+    </div>`;
+  } else if(state.docType==='receipt'){
+    payBoxHtml = `
+    <div class="pay">
       <div>
-        <div class="inv-label">INVOICE</div>
-        <div class="inv-meta">
-          No. <b>${esc(invNo)}</b><br>
-          Date <b>${invDate}</b><br>
-          Due <b>${due}</b>
+        <div class="pay-title">PAYMENT · RECEIVED WITH THANKS</div>
+        <div class="pay-det">
+          Paid via PayNow${phone?` · <b>${esc(phone)}</b>`:''}<br>
+          Reference <b>${esc(payRef)}</b>
         </div>
+        <div class="pay-note">Received on <b>${due==='—'?invDate:due}</b>. This receipt confirms payment in full for the lessons listed above.</div>
       </div>
-    </div>
-    <hr class="rule">
-    <div class="bill-grid">
-      <div><div class="k">Billed to</div><div class="v">${esc(billTo)||'—'}</div></div>
-      <div><div class="k">Student</div><div class="v">${esc(student)||'—'}${subject?`<small>${esc(subject)}</small>`:''}</div></div>
-    </div>
-    <table>
-      <thead><tr><th></th><th>Date</th><th>Time</th><th class="r">Hours</th><th class="r">Amount</th></tr></thead>
-      <tbody>${rowsHtml}</tbody>
-    </table>
-    <div class="totals"><div class="totals-box">
-      <div class="t-line"><span>Total hours</span><span>${hrs(totalH)} h</span></div>
-      <div class="t-line"><span>Rate</span><span>${money(rate)} / h</span></div>
-      <div class="t-line grand"><span class="lbl">Total due</span><span class="amt">${money(total)}</span></div>
-    </div></div>
-    ${note?`<div class="notes">${esc(note)}</div>`:''}
+    </div>`;
+  } else {
+    payBoxHtml = `
     <div class="pay">
       ${state.qr?`<div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>`:''}
       <div>
@@ -637,15 +680,52 @@ function renderSheet(){
         </div>
         <div class="pay-note">Please include <b>${esc(payRef)}</b> in the PayNow reference${state.qr?', or scan the QR code':''}.</div>
       </div>
+    </div>`;
+  }
+
+  $('sheet').innerHTML=`
+    <div class="inv-top">
+      <div>
+        <div class="wordmark"><span class="t">TUTOR</span>JULIAN</div>
+        <div class="from-block">
+          <span class="nm">${esc(name)}</span><br>
+          Private Tuition · Singapore${phone?`<br>${esc(phone)}`:''}
+        </div>
+      </div>
+      <div>
+        <div class="inv-label">${cfg.title}</div>
+        <div class="inv-meta">
+          No. <b>${esc(invNo)}</b><br>
+          Date <b>${invDate}</b><br>
+          ${esc(cfg.dueLabelSheet)} <b>${due}</b>
+        </div>
+      </div>
     </div>
+    <hr class="rule">
+    <div class="bill-grid">
+      <div><div class="k">${esc(cfg.billLabelSheet)}</div><div class="v">${esc(billTo)||'—'}</div></div>
+      <div><div class="k">Student</div><div class="v">${esc(student)||'—'}${subject?`<small>${esc(subject)}</small>`:''}</div></div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>Date</th><th>Time</th><th class="r">Hours</th><th class="r">Amount</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <div class="totals"><div class="totals-box">
+      <div class="t-line"><span>Total hours</span><span>${hrs(totalH)} h</span></div>
+      <div class="t-line"><span>Rate</span><span>${money(rate)} / h</span></div>
+      <div class="t-line grand"><span class="lbl">${esc(cfg.totalLabel)}</span><span class="amt">${money(total)}</span></div>
+    </div></div>
+    ${note?`<div class="notes">${esc(note)}</div>`:''}
+    ${payBoxHtml}
     <div class="foot">
-      <span class="thanks">Thank you for learning with TutorJulian.</span>
+      <span class="thanks">${esc(cfg.footerThanks)}</span>
       <span class="mark">TUTORJULIAN · ${esc(invNo)}</span>
     </div>`;
 }
 
 /* ═════════ whatsapp summary ═════════ */
 function waText(){
+  const cfg=DOC_TYPES[state.docType];
   const rate=parseFloat($('rate').value)||0;
   const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
   const invNo=$('invNo').value.trim();
@@ -653,19 +733,28 @@ function waText(){
   const name=$('tutorName').value.trim()||'Julian Cheung';
   const phone=$('payNumber').value.trim();
   const student=$('student').value.trim(), subject=$('subject').value.trim();
+  const due=$('dueDate').value?fmtDateISO($('dueDate').value):null;
   const lines=state.lessons.map(L=>`• ${fmtDateISO(L.iso)}, ${L.timeText} — ${hrs(L.hours)}h`);
+
+  let paymentLines;
+  if(state.docType==='quotation'){
+    paymentLines = [ due?`Valid until: ${due}`:'', `Let me know if you'd like to go ahead!` ];
+  } else if(state.docType==='receipt'){
+    paymentLines = [ `Paid via PayNow${phone?` (${phone})`:''}`, `Ref: ${payRef}`, `Received with thanks 🙏` ];
+  } else {
+    paymentLines = [ `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`, `Ref: ${payRef}`, `Thank you! 🙏` ];
+  }
+
   return [
-    `*TutorJulian — Invoice ${invNo}*`,
+    `*TutorJulian — ${cfg.waHeader} ${invNo}*`,
     student?`Student: ${student}${subject?` (${subject})`:''}`:'' ,
     ``,
     `Lessons:`,
     ...lines,
     ``,
-    `Total: ${hrs(totalH)}h × ${money(rate)}/h = *${money(totalH*rate)}*`,
+    `${cfg.waTotalWord}: ${hrs(totalH)}h × ${money(rate)}/h = *${money(totalH*rate)}*`,
     ``,
-    `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`,
-    `Ref: ${payRef}`,
-    `Thank you! 🙏`
+    ...paymentLines
   ].filter(l=>l!==null && l!==undefined && l!=='' || l==='').join('\n').replace(/\n{3,}/g,'\n\n');
 }
 async function copyText(t){
@@ -736,6 +825,25 @@ $('qrRemoveBtn').addEventListener('click', async ()=>{
   state.qr=null; await store.del('tj-qr'); showQrThumb(); renderSheet(); toast('QR removed');
 });
 
+/* ═════════ doc-type toggle ═════════ */
+async function applyDocType(type){
+  state.docType = type;
+  const cfg = DOC_TYPES[type];
+  document.querySelectorAll('.doctype-toggle button').forEach(b=> b.classList.toggle('active', b.dataset.type===type));
+  $('sec02Title').textContent = cfg.sec02;
+  $('invNoLabel').textContent = cfg.invNoLabel;
+  $('invDateLabel').textContent = cfg.invDateLabel;
+  $('billToLabel').textContent = cfg.billLabel;
+  $('dueDateLabel').textContent = cfg.dueLabel;
+  $('invNoteLabel').textContent = cfg.noteLabel;
+  $('payRefField').style.display = (type==='quotation') ? 'none' : '';   // nothing to pay yet on a quotation
+  await refreshInvNoDefault();
+  renderSheet();
+}
+document.querySelectorAll('.doctype-toggle button').forEach(b=>{
+  b.addEventListener('click', ()=>applyDocType(b.dataset.type));
+});
+
 $('printBtn').addEventListener('click', async ()=>{ await bumpInvNoIfAuto(); window.print(); });
 $('waBtn').addEventListener('click', async ()=>{
   toast(await copyText(waText()) ? 'WhatsApp summary copied' : 'Copy failed — select manually');
@@ -745,7 +853,7 @@ $('waBtn').addEventListener('click', async ()=>{
 (async function init(){
   $('invDate').value=new Date().toISOString().slice(0,10);
   await loadSettings();
-  $('invNo').value=await suggestInvNo();
+  await applyDocType('invoice');
   renderRows();          // renderRows → refreshTotals → refreshPayRefDefault, so payRef gets its first default here
 })();
 </script>
