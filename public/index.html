@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TutorJulian · InvoiceForge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#050508; --panel:#0a0e14; --panel-2:#0d1218; --line:#16202b;
+  --teal:#00D4C8; --teal-dim:rgba(0,212,200,.14); --gold:#F5C842;
+  --txt:#dbe4ea; --txt-dim:#7d8b96; --ink:#151a1f; --ink-dim:#5a6570;
+  --mono:'JetBrains Mono',ui-monospace,monospace; --sans:'Space Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+body{background:var(--void);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.5;min-height:100vh}
+::selection{background:var(--teal);color:#031514}
+
+/* ── app chrome ── */
+.topbar{display:flex;align-items:baseline;gap:14px;padding:18px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(5,5,8,.92);backdrop-filter:blur(8px);z-index:20}
+.topbar .brand{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--teal);font-weight:700}
+.topbar h1{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);align-self:center}
+.topbar .spacer{flex:1}
+.topbar .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim)}
+
+.layout{display:grid;grid-template-columns:420px 1fr;gap:0;min-height:calc(100vh - 60px)}
+aside{border-right:1px solid var(--line);padding:22px 24px 60px;overflow-y:auto;max-height:calc(100vh - 60px)}
+.stage{padding:34px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;max-height:calc(100vh - 60px);background:
+  radial-gradient(1000px 500px at 70% -10%, rgba(0,212,200,.05), transparent 60%), var(--void)}
+
+/* ── control sections ── */
+section{margin-bottom:26px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+section>.sec-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.sec-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal);font-weight:700}
+.sec-head h2{font-size:14px;font-weight:500;color:var(--txt)}
+.sec-body{padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-dim);margin-bottom:6px}
+input[type=text],input[type=date],input[type=number],textarea{
+  width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--txt);
+  font-family:var(--sans);font-size:14px;padding:9px 11px;transition:border-color .15s}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+textarea{font-family:var(--mono);font-size:12.5px;line-height:1.7;min-height:130px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#46525c}
+.mono-in{font-family:var(--mono)!important;font-size:13px!important}
+
+button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7px;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--txt);padding:9px 15px;cursor:pointer;transition:all .15s}
+button:hover{border-color:var(--teal);color:var(--teal)}
+button.primary{background:var(--teal);border-color:var(--teal);color:#031514;font-weight:700}
+button.primary:hover{background:#2ee6db;color:#031514}
+button.ghost{background:transparent}
+button.tiny{padding:4px 9px;font-size:12px;font-family:var(--mono)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* ── QR upload ── */
+.qr-zone{display:flex;gap:12px;align-items:center}
+.qr-thumb{width:74px;height:74px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background:#fff;flex-shrink:0}
+.qr-thumb img{width:100%;height:100%;object-fit:contain}
+.qr-thumb.empty{background:var(--panel-2);color:#3c4854;font-family:var(--mono);font-size:10px;text-align:center;line-height:1.4}
+.qr-meta{font-size:12.5px;color:var(--txt-dim)}
+input[type=file]{display:none}
+
+/* ── lessons table ── */
+.rows{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.row-line{display:grid;grid-template-columns:118px 1fr 62px 28px;gap:7px;align-items:center}
+.row-line input{padding:7px 8px;font-size:12.5px;font-family:var(--mono)}
+.row-line .del{background:transparent;border:none;color:#4a5560;font-size:15px;padding:2px;line-height:1}
+.row-line .del:hover{color:#ff6b6b}
+.rows-head{display:grid;grid-template-columns:118px 1fr 62px 28px;gap:7px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:#46525c;margin-top:14px}
+.skipped{margin-top:12px;border:1px solid rgba(245,200,66,.3);background:rgba(245,200,66,.06);border-radius:7px;
+  padding:10px 12px;font-family:var(--mono);font-size:11.5px;color:var(--gold);white-space:pre-wrap}
+.summary-line{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
+  align-items:baseline;font-family:var(--mono);font-size:12.5px;color:var(--txt-dim)}
+.summary-line strong{color:var(--teal);font-size:16px;font-weight:700}
+.saved-flash{font-family:var(--mono);font-size:10.5px;color:var(--teal);opacity:0;transition:opacity .3s}
+.saved-flash.on{opacity:1}
+
+/* ── invoice sheet ── */
+.sheet-wrap{width:100%;display:flex;justify-content:center}
+.sheet{width:794px;min-height:1123px;background:#fff;color:var(--ink);border-radius:3px;
+  box-shadow:0 0 0 1px rgba(0,212,200,.18), 0 30px 80px rgba(0,0,0,.6), 0 0 60px rgba(0,212,200,.06);
+  padding:58px 62px;font-family:var(--sans);flex-shrink:0}
+.sheet .inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.sheet .wordmark{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.2em;color:var(--ink)}
+.sheet .wordmark .t{color:#00b5ab}
+.sheet .from-block{margin-top:10px;font-size:12.5px;color:var(--ink-dim);line-height:1.65}
+.sheet .from-block .nm{color:var(--ink);font-weight:500}
+.sheet .inv-label{font-size:34px;font-weight:700;letter-spacing:.04em;text-align:right;line-height:1}
+.sheet .inv-meta{margin-top:12px;font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--ink-dim);line-height:1.9}
+.sheet .inv-meta b{color:var(--ink);font-weight:500}
+.sheet hr.rule{border:none;border-top:2px solid #00b5ab;margin:22px 0 0}
+.sheet .bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:20px 0;border-bottom:1px solid #e4e9ec}
+.sheet .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#9aa6af;margin-bottom:5px}
+.sheet .v{font-size:15px;font-weight:500}
+.sheet .v small{display:block;font-size:12.5px;color:var(--ink-dim);font-weight:400;margin-top:2px}
+.sheet table{width:100%;border-collapse:collapse;margin-top:26px}
+.sheet th{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9aa6af;
+  text-align:left;padding:0 10px 9px;border-bottom:1px solid #d8dee2}
+.sheet th.r,.sheet td.r{text-align:right}
+.sheet td{padding:10px;font-size:13px;border-bottom:1px solid #eef1f3}
+.sheet td.mono{font-family:var(--mono);font-size:12px}
+.sheet td.idx{color:#b3bcc3;font-family:var(--mono);font-size:11px;width:30px}
+.sheet .empty-row td{color:#a8b1b8;font-style:italic;text-align:center;padding:26px}
+.sheet .totals{display:flex;justify-content:flex-end;margin-top:18px}
+.sheet .totals-box{width:290px}
+.sheet .t-line{display:flex;justify-content:space-between;padding:6px 10px;font-size:12.5px;color:var(--ink-dim);font-family:var(--mono)}
+.sheet .t-line.grand{border-top:2px solid #00b5ab;margin-top:8px;padding-top:12px;align-items:baseline}
+.sheet .t-line.grand .lbl{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+.sheet .t-line.grand .amt{font-size:24px;font-weight:700;color:var(--ink)}
+.sheet .pay{margin-top:40px;border:1px solid #d8dee2;border-radius:8px;padding:20px;display:flex;gap:22px;align-items:center;
+  page-break-inside:avoid}
+.sheet .pay .qr{width:128px;height:128px;flex-shrink:0;border:1px solid #e4e9ec;border-radius:6px;overflow:hidden;background:#fff}
+.sheet .pay .qr img{width:100%;height:100%;object-fit:contain}
+.sheet .pay-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#00b5ab;font-weight:700;margin-bottom:9px}
+.sheet .pay-det{font-size:13.5px;line-height:1.8}
+.sheet .pay-det b{font-weight:700;font-family:var(--mono);font-size:14px}
+.sheet .pay-note{font-size:11.5px;color:var(--ink-dim);margin-top:8px}
+.sheet .foot{margin-top:34px;display:flex;justify-content:space-between;align-items:baseline;font-size:11.5px;color:var(--ink-dim)}
+.sheet .foot .thanks{font-size:13px;color:var(--ink);font-weight:500}
+.sheet .foot .mark{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#9aa6af}
+.sheet .notes{margin-top:16px;font-size:12px;color:var(--ink-dim);white-space:pre-wrap}
+
+/* ── toast ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--panel);
+  border:1px solid var(--teal);color:var(--teal);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:8px;
+  opacity:0;pointer-events:none;transition:all .25s;z-index:60}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:1180px){
+  .layout{grid-template-columns:1fr}
+  aside{max-height:none;border-right:none;border-bottom:1px solid var(--line)}
+  .stage{max-height:none;padding:22px 12px}
+  .sheet-wrap{overflow-x:auto;justify-content:flex-start}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ── print: sheet only, true A4 ── */
+@media print{
+  @page{size:A4;margin:11mm}
+  body{background:#fff}
+  .topbar,aside,#toast{display:none!important}
+  .layout{display:block;min-height:0}
+  .stage{padding:0;max-height:none;overflow:visible;background:#fff;display:block}
+  .sheet-wrap{display:block;overflow:visible}
+  .sheet{width:auto;min-height:0;box-shadow:none;border-radius:0;padding:0}
+  .sheet hr.rule,.sheet .t-line.grand,.sheet .pay-title{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span>
+  <span class="brand">TUTORJULIAN</span>
+  <h1>InvoiceForge</h1>
+  <span class="spacer"></span>
+  <span class="hint">paste · parse · PayNow</span>
+</div>
+
+<div class="layout">
+<aside>
+
+  <!-- 01 · my details -->
+  <section>
+    <div class="sec-head"><span class="tag">01</span><h2>My details</h2><span class="spacer" style="flex:1"></span><span class="saved-flash" id="savedFlash">saved ✓</span></div>
+    <div class="sec-body">
+      <div class="grid2">
+        <div class="field"><label for="tutorName">Name on invoice</label><input type="text" id="tutorName" placeholder="Julian Cheung"></div>
+        <div class="field"><label for="payNumber">PayNow mobile</label><input type="text" id="payNumber" class="mono-in" placeholder="+65 9XXX XXXX"></div>
+      </div>
+      <div class="field"><label for="defaultRate">Default rate (S$/hr)</label><input type="number" id="defaultRate" class="mono-in" min="0" step="5" placeholder="70" style="width:130px"></div>
+      <div class="field">
+        <label>PayNow QR (JPG/PNG)</label>
+        <div class="qr-zone">
+          <div class="qr-thumb empty" id="qrThumb">no QR<br>yet</div>
+          <div>
+            <div class="btn-row" style="margin-top:0">
+              <button class="tiny" id="qrUploadBtn">Upload QR</button>
+              <button class="tiny ghost" id="qrRemoveBtn" style="display:none">Remove</button>
+            </div>
+            <div class="qr-meta" style="margin-top:7px">Shown on every invoice. Saved in this browser.</div>
+          </div>
+        </div>
+        <input type="file" id="qrFile" accept="image/*">
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · this invoice -->
+  <section>
+    <div class="sec-head"><span class="tag">02</span><h2>This invoice</h2></div>
+    <div class="sec-body">
+      <div class="grid2">
+        <div class="field"><label for="invNo">Invoice no.</label><input type="text" id="invNo" class="mono-in"></div>
+        <div class="field"><label for="invDate">Invoice date</label><input type="date" id="invDate" class="mono-in"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="billTo">Bill to (parent / client)</label><input type="text" id="billTo" placeholder="Mrs Tan"></div>
+        <div class="field"><label for="dueDate">Due date (optional)</label><input type="date" id="dueDate" class="mono-in"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label for="student">Student (optional)</label><input type="text" id="student" placeholder="Kayden"></div>
+        <div class="field"><label for="subject">Subject / level</label><input type="text" id="subject" placeholder="Sec 3 A-Math"></div>
+      </div>
+      <div class="field"><label for="invNote">Note on invoice (optional)</label><input type="text" id="invNote" placeholder="e.g. July lessons · materials included"></div>
+      <div class="field">
+        <label for="payRef">PayNow reference <span style="text-transform:none;opacity:.7">(auto-fills, editable)</span></label>
+        <input type="text" id="payRef" class="mono-in" placeholder="e.g. Kayden2607">
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · lessons -->
+  <section>
+    <div class="sec-head"><span class="tag">03</span><h2>Lessons</h2></div>
+    <div class="sec-body">
+      <div class="field">
+        <label for="pasteBox">Paste from Google Calendar</label>
+        <textarea id="pasteBox" placeholder="One lesson per line, e.g.&#10;Tuesday, July 7 ⋅ 4:00 – 6:00pm&#10;14/7 1600 – 1730&#10;21 Jul&#10;4 – 5:30 PM&#10;&#10;A date on its own line applies to the time lines below it."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="primary" id="parseBtn">Parse lessons</button>
+        <button id="sampleBtn">Load sample</button>
+        <button class="ghost" id="clearBtn">Clear all</button>
+      </div>
+      <div class="skipped" id="skippedBox" style="display:none"></div>
+
+      <div class="field" style="margin-top:16px"><label for="rate">Rate for this invoice (S$/hr)</label>
+        <input type="number" id="rate" class="mono-in" min="0" step="5" style="width:130px"></div>
+
+      <div class="rows-head"><span>Date</span><span>Time</span><span>Hrs</span><span></span></div>
+      <div class="rows" id="rowsBox"></div>
+      <div class="btn-row"><button class="tiny" id="addRowBtn">+ Add lesson manually</button></div>
+
+      <div class="summary-line"><span id="sumLessons">0 lessons · 0 h</span><strong id="sumTotal">S$0.00</strong></div>
+    </div>
+  </section>
+
+  <!-- 04 · send -->
+  <section>
+    <div class="sec-head"><span class="tag">04</span><h2>Send</h2></div>
+    <div class="sec-body">
+      <div class="btn-row" style="margin-top:0">
+        <button class="primary" id="printBtn">Print / Save PDF</button>
+        <button id="waBtn">Copy WhatsApp summary</button>
+      </div>
+      <div class="qr-meta" style="margin-top:10px">Print → “Save as PDF” gives you the client copy. WhatsApp summary is plain text with PayNow details.</div>
+    </div>
+  </section>
+
+</aside>
+
+<main class="stage">
+  <div class="sheet-wrap"><div class="sheet" id="sheet"></div></div>
+</main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═════════ storage: window.storage (Claude artifact) → localStorage (deployed) → memory ═════════ */
+const _mem = {};
+const store = {
+  async get(k){
+    if (typeof window.storage !== 'undefined' && window.storage?.get){
+      try{ const r = await window.storage.get(k); return r ? r.value : null; }catch(e){ return null; }
+    }
+    try{ return localStorage.getItem(k); }catch(e){ return _mem[k] ?? null; }
+  },
+  async set(k,v){
+    if (typeof window.storage !== 'undefined' && window.storage?.set){
+      try{ await window.storage.set(k,v); return; }catch(e){}
+    }
+    try{ localStorage.setItem(k,v); }catch(e){ _mem[k]=v; }
+  },
+  async del(k){
+    if (typeof window.storage !== 'undefined' && window.storage?.delete){
+      try{ await window.storage.delete(k); return; }catch(e){}
+    }
+    try{ localStorage.removeItem(k); }catch(e){ delete _mem[k]; }
+  }
+};
+
+/* ═════════ lesson parser (date + time range from freeform calendar paste) ═════════ */
+const MONTHS = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+
+function findTimeRange(line){
+  const re = /(?<!\d)(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?\s*(?:–|—|−|-|~|to|until)\s*(\d{1,2})(?:[:.](\d{2}))?(?!\d)\s*(am|pm)?/gi;
+  let m;
+  while((m = re.exec(line)) !== null){
+    const h1=+m[1], min1=m[2]?+m[2]:0, mer1=m[3]?m[3].toLowerCase():null;
+    const h2=+m[4], min2=m[5]?+m[5]:0, mer2=m[6]?m[6].toLowerCase():null;
+    if(h1<=23 && h2<=23 && min1<=59 && min2<=59 && !(h1>12&&mer1) && !(h2>12&&mer2)){
+      const r = resolveRange(h1,min1,mer1,h2,min2,mer2);
+      if(r) return {...r, index:m.index, length:m[0].length};
+    }
+    re.lastIndex = m.index + 1;
+  }
+  const mil = /(?<!\d)(\d{3,4})\s*(?:–|—|−|-|~|to)\s*(\d{3,4})(?!\d)/i.exec(line);
+  if(mil){
+    const p=s=>({h:+s.slice(0,-2),min:+s.slice(-2)});
+    const a=p(mil[1]), b=p(mil[2]);
+    if(a.h<=23&&b.h<=23&&a.min<=59&&b.min<=59){
+      const r=resolveRange(a.h,a.min,'24',b.h,b.min,'24');
+      if(r) return {...r,index:mil.index,length:mil[0].length};
+    }
+  }
+  return null;
+}
+
+function resolveRange(h1,min1,mer1,h2,min2,mer2){
+  let s,e;
+  const is24 = mer1==='24' || h1>12 || h2>12 || h1===0 || h2===0;
+  if(is24){ s=h1*60+min1; e=h2*60+min2; }
+  else if(mer1 && mer2){ s=to24(h1,mer1)*60+min1; e=to24(h2,mer2)*60+min2; }
+  else if(!mer1 && mer2){                       // "11 – 1pm" → latest start before end
+    e=to24(h2,mer2)*60+min2;
+    const c=[(h1%12)*60+min1,(h1%12+12)*60+min1];
+    s=c.filter(x=>e-x>0 && e-x<=720).sort((a,b)=>b-a)[0];
+    if(s===undefined) s=c[0];
+  } else if(mer1 && !mer2){                     // "10am – 12" → earliest end after start
+    s=to24(h1,mer1)*60+min1;
+    const c=[(h2%12)*60+min2,(h2%12+12)*60+min2];
+    e=c.filter(x=>x-s>0 && x-s<=720).sort((a,b)=>a-b)[0];
+    if(e===undefined) e=c[1];
+  } else {                                      // no am/pm at all: 8–11 → am, else pm (tutoring)
+    const sh = (h1>=8&&h1<=11)?h1:(h1%12)+12;
+    s=sh*60+min1;
+    const c=[(h2%12)*60+min2,(h2%12+12)*60+min2];
+    e=c.filter(x=>x-s>0 && x-s<=720).sort((a,b)=>a-b)[0];
+    if(e===undefined) e=c[1];
+  }
+  if(e<=s) e+=720; if(e<=s) return null;
+  const dur=(e-s)/60;
+  if(dur<=0||dur>14) return null;
+  return {start:s,end:e,hours:Math.round(dur*100)/100};
+}
+function to24(h,mer){ if(mer==='am') return h===12?0:h; return h===12?12:h+12; }
+
+function findDate(line, defaultYear){
+  let m = /(\d{1,2})(?!\d)(?:st|nd|rd|th)?\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s*(\d{4})?/i.exec(line);
+  if(m){ const d=chk(m[3]?+m[3]:defaultYear, MONTHS[m[2].toLowerCase().slice(0,3)], +m[1]); if(d) return d; }
+  m = /(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})(?!\d)(?:st|nd|rd|th)?,?\s*(\d{4})?/i.exec(line);
+  if(m){ const d=chk(m[3]?+m[3]:defaultYear, MONTHS[m[1].toLowerCase().slice(0,3)], +m[2]); if(d) return d; }
+  m = /(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?(?!\d)/.exec(line);   // DD/MM[/YYYY] — SG order
+  if(m){ let y=m[3]?(+m[3]<100?2000+ +m[3]:+m[3]):defaultYear; const d=chk(y,+m[2]-1,+m[1]); if(d) return d; }
+  return null;
+}
+function chk(y,mo,d){ if(mo<0||mo>11||d<1||d>31||y<2000||y>2100) return null; const dt=new Date(y,mo,d); if(dt.getMonth()!==mo) return null; return {y,mo,d}; }
+
+function parseLessons(text, defaultYear){
+  const rows=[], skipped=[];
+  let pendingDate=null;
+  for(let raw of text.split(/\n+/)){
+    const line=raw.trim(); if(!line) continue;
+    // ISO dates contain dashes that confuse the time matcher — extract first
+    let work=line, isoDate=null;
+    const iso=/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(line);
+    if(iso){ isoDate=chk(+iso[1],+iso[2]-1,+iso[3]); if(isoDate) work=line.slice(0,iso.index)+' '+line.slice(iso.index+iso[0].length); }
+    const t=findTimeRange(work);
+    const rest = t ? (work.slice(0,t.index)+' '+work.slice(t.index+t.length)) : work;
+    const d=isoDate || findDate(rest, defaultYear);
+    if(d && t){ rows.push(mkRow(d,t)); pendingDate=d; }
+    else if(d){ pendingDate=d; }
+    else if(t && pendingDate){ rows.push(mkRow(pendingDate,t)); }
+    else if(t){ skipped.push(line+'   ← time found, no date'); }
+    else if(/\d/.test(line)){ skipped.push(line); }
+    // pure-text lines (event titles) are ignored quietly
+  }
+  return {rows, skipped};
+}
+function mkRow(d,t){
+  return { iso:`${d.y}-${String(d.mo+1).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`,
+           timeText:fmtRange(t.start,t.end), hours:t.hours };
+}
+
+/* ═════════ formatting ═════════ */
+function fmtTime(min){
+  let h=Math.floor(min/60)%24, m=min%60;
+  const mer = h>=12?'pm':'am'; let h12=h%12; if(h12===0) h12=12;
+  return h12 + (m? ':'+String(m).padStart(2,'0') : ':00') + mer;
+}
+function fmtRange(s,e){ return fmtTime(s)+' – '+fmtTime(e); }
+function fmtDateISO(iso){
+  const [y,mo,d]=iso.split('-').map(Number);
+  const dt=new Date(y,mo-1,d);
+  const wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()];
+  const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo-1];
+  return `${wd}, ${d} ${mn} ${y}`;
+}
+function money(n){ return 'S$' + (Math.round(n*100)/100).toLocaleString('en-SG',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function hrs(n){ return (Math.round(n*100)/100).toString(); }
+function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ═════════ state ═════════ */
+const state = {
+  lessons: [],            // {iso, timeText, hours}
+  settings: { tutorName:'Julian Cheung', payNumber:'', defaultRate:70 },
+  qr: null,
+  payRefAuto: ''          // last auto-generated PayNow reference, used to detect manual edits
+};
+const $ = id => document.getElementById(id);
+
+/* ═════════ settings persistence ═════════ */
+let saveTimer=null;
+function flashSaved(){ const f=$('savedFlash'); f.classList.add('on'); setTimeout(()=>f.classList.remove('on'),1200); }
+function saveSettings(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async ()=>{
+    state.settings={ tutorName:$('tutorName').value, payNumber:$('payNumber').value, defaultRate:parseFloat($('defaultRate').value)||0 };
+    await store.set('tj-settings', JSON.stringify(state.settings));
+    flashSaved();
+  },400);
+}
+async function loadSettings(){
+  const raw=await store.get('tj-settings');
+  if(raw){ try{ Object.assign(state.settings, JSON.parse(raw)); }catch(e){} }
+  $('tutorName').value = state.settings.tutorName||'';
+  $('payNumber').value = state.settings.payNumber||'';
+  $('defaultRate').value = state.settings.defaultRate||'';
+  $('rate').value = state.settings.defaultRate||'';
+  const q=await store.get('tj-qr');
+  if(q){ state.qr=q; showQrThumb(); }
+}
+function showQrThumb(){
+  const t=$('qrThumb');
+  if(state.qr){ t.classList.remove('empty'); t.innerHTML=`<img src="${state.qr}" alt="PayNow QR">`; $('qrRemoveBtn').style.display=''; }
+  else { t.classList.add('empty'); t.textContent='no QR yet'; $('qrRemoveBtn').style.display='none'; }
+}
+
+/* ═════════ invoice number ═════════ */
+async function suggestInvNo(){
+  const now=new Date();
+  const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
+  const raw = await store.get('tj-seq-'+ym);
+  const seq = (parseInt(raw||'0',10)||0)+1;
+  return `TJ-${ym}-${String(seq).padStart(3,'0')}`;
+}
+async function bumpInvNoIfAuto(){
+  const now=new Date();
+  const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
+  const m = new RegExp(`^TJ-${ym}-(\\d{3})$`).exec($('invNo').value.trim());
+  if(m) await store.set('tj-seq-'+ym, String(parseInt(m[1],10)));
+}
+
+/* ═════════ PayNow reference: <Student><YY><MM><DD if single lesson> ═════════ */
+function computePayRef(){
+  const student=$('student').value.trim().replace(/[^a-zA-Z0-9]/g,'') || $('billTo').value.trim().replace(/[^a-zA-Z0-9]/g,'') || 'Tuition';
+  let y,mo,d=null;
+  if(state.lessons.length===1){
+    [y,mo,d]=state.lessons[0].iso.split('-').map(Number);
+  } else if(state.lessons.length>1){
+    [y,mo]=state.lessons[0].iso.split('-').map(Number);   // multiple lessons → month only, no single day
+  } else if($('invDate').value){
+    [y,mo,d]=$('invDate').value.split('-').map(Number);
+  } else {
+    const now=new Date(); y=now.getFullYear(); mo=now.getMonth()+1;
+  }
+  const yy=String(y).slice(2), mm=String(mo).padStart(2,'0');
+  return student + yy + mm + (d?String(d).padStart(2,'0'):'');
+}
+function refreshPayRefDefault(){
+  const field=$('payRef');
+  const newAuto=computePayRef();
+  if(field.value==='' || field.value===state.payRefAuto){ field.value=newAuto; }
+  state.payRefAuto=newAuto;
+  renderSheet();
+}
+
+/* ═════════ lessons UI ═════════ */
+function sortLessons(){ state.lessons.sort((a,b)=> a.iso<b.iso?-1 : a.iso>b.iso?1 : 0); }
+function renderRows(){
+  const box=$('rowsBox'); box.innerHTML='';
+  state.lessons.forEach((L,i)=>{
+    const div=document.createElement('div'); div.className='row-line';
+    div.innerHTML=`
+      <input type="date" value="${L.iso}" data-i="${i}" data-f="iso" aria-label="Lesson date">
+      <input type="text" value="${esc(L.timeText)}" data-i="${i}" data-f="timeText" aria-label="Lesson time">
+      <input type="number" value="${L.hours}" min="0" step="0.25" data-i="${i}" data-f="hours" aria-label="Hours">
+      <button class="del" data-i="${i}" title="Remove lesson" aria-label="Remove lesson">✕</button>`;
+    box.appendChild(div);
+  });
+  refreshTotals();
+}
+$('rowsBox').addEventListener('input', e=>{
+  const i=+e.target.dataset.i, f=e.target.dataset.f;
+  if(f==='hours') state.lessons[i].hours=parseFloat(e.target.value)||0;
+  else if(f==='iso') state.lessons[i].iso=e.target.value;
+  else if(f==='timeText'){
+    state.lessons[i].timeText=e.target.value;
+    const t=findTimeRange(e.target.value);           // retype the time → hours follow
+    if(t){ state.lessons[i].hours=t.hours;
+      const h=e.target.parentElement.querySelector('[data-f=hours]'); if(h) h.value=t.hours; }
+  }
+  refreshTotals();
+});
+$('rowsBox').addEventListener('click', e=>{
+  if(e.target.classList.contains('del')){ state.lessons.splice(+e.target.dataset.i,1); renderRows(); }
+});
+$('rowsBox').addEventListener('change', e=>{ if(e.target.dataset.f==='iso'){ sortLessons(); renderRows(); } });
+
+function refreshTotals(){
+  const rate=parseFloat($('rate').value)||0;
+  const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
+  $('sumLessons').textContent=`${state.lessons.length} lesson${state.lessons.length===1?'':'s'} · ${hrs(totalH)} h`;
+  $('sumTotal').textContent=money(totalH*rate);
+  refreshPayRefDefault();
+}
+
+/* ═════════ invoice sheet ═════════ */
+function renderSheet(){
+  const s=state.settings, rate=parseFloat($('rate').value)||0;
+  const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
+  const total=totalH*rate;
+  const invNo=$('invNo').value.trim()||'—';
+  const invDate=$('invDate').value?fmtDateISO($('invDate').value):'—';
+  const due=$('dueDate').value?fmtDateISO($('dueDate').value):'Upon receipt';
+  const billTo=$('billTo').value.trim(), student=$('student').value.trim(), subject=$('subject').value.trim();
+  const note=$('invNote').value.trim();
+  const name=$('tutorName').value.trim()||'Julian Cheung';
+  const phone=$('payNumber').value.trim();
+  const payRef=$('payRef').value.trim()||invNo;
+
+  const rowsHtml = state.lessons.length ? state.lessons.map((L,i)=>`
+      <tr><td class="idx">${String(i+1).padStart(2,'0')}</td>
+      <td>${fmtDateISO(L.iso)}</td>
+      <td class="mono">${esc(L.timeText)}</td>
+      <td class="mono r">${hrs(L.hours)}</td>
+      <td class="mono r">${money(L.hours*rate)}</td></tr>`).join('')
+    : `<tr class="empty-row"><td colspan="5">No lessons yet — paste your calendar entries and hit Parse.</td></tr>`;
+
+  $('sheet').innerHTML=`
+    <div class="inv-top">
+      <div>
+        <div class="wordmark"><span class="t">TUTOR</span>JULIAN</div>
+        <div class="from-block">
+          <span class="nm">${esc(name)}</span><br>
+          Private Tuition · Singapore${phone?`<br>${esc(phone)}`:''}
+        </div>
+      </div>
+      <div>
+        <div class="inv-label">INVOICE</div>
+        <div class="inv-meta">
+          No. <b>${esc(invNo)}</b><br>
+          Date <b>${invDate}</b><br>
+          Due <b>${due}</b>
+        </div>
+      </div>
+    </div>
+    <hr class="rule">
+    <div class="bill-grid">
+      <div><div class="k">Billed to</div><div class="v">${esc(billTo)||'—'}</div></div>
+      <div><div class="k">Student</div><div class="v">${esc(student)||'—'}${subject?`<small>${esc(subject)}</small>`:''}</div></div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>Date</th><th>Time</th><th class="r">Hours</th><th class="r">Amount</th></tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <div class="totals"><div class="totals-box">
+      <div class="t-line"><span>Total hours</span><span>${hrs(totalH)} h</span></div>
+      <div class="t-line"><span>Rate</span><span>${money(rate)} / h</span></div>
+      <div class="t-line grand"><span class="lbl">Total due</span><span class="amt">${money(total)}</span></div>
+    </div></div>
+    ${note?`<div class="notes">${esc(note)}</div>`:''}
+    <div class="pay">
+      ${state.qr?`<div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>`:''}
+      <div>
+        <div class="pay-title">PAYMENT · PAYNOW</div>
+        <div class="pay-det">
+          ${phone?`Mobile <b>${esc(phone)}</b><br>`:''}
+          Name <b>${esc(name)}</b>
+        </div>
+        <div class="pay-note">Please include <b>${esc(payRef)}</b> in the PayNow reference${state.qr?', or scan the QR code':''}.</div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="thanks">Thank you for learning with TutorJulian.</span>
+      <span class="mark">TUTORJULIAN · ${esc(invNo)}</span>
+    </div>`;
+}
+
+/* ═════════ whatsapp summary ═════════ */
+function waText(){
+  const rate=parseFloat($('rate').value)||0;
+  const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
+  const invNo=$('invNo').value.trim();
+  const payRef=$('payRef').value.trim()||invNo;
+  const name=$('tutorName').value.trim()||'Julian Cheung';
+  const phone=$('payNumber').value.trim();
+  const student=$('student').value.trim(), subject=$('subject').value.trim();
+  const lines=state.lessons.map(L=>`• ${fmtDateISO(L.iso)}, ${L.timeText} — ${hrs(L.hours)}h`);
+  return [
+    `*TutorJulian — Invoice ${invNo}*`,
+    student?`Student: ${student}${subject?` (${subject})`:''}`:'' ,
+    ``,
+    `Lessons:`,
+    ...lines,
+    ``,
+    `Total: ${hrs(totalH)}h × ${money(rate)}/h = *${money(totalH*rate)}*`,
+    ``,
+    `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`,
+    `Ref: ${payRef}`,
+    `Thank you! 🙏`
+  ].filter(l=>l!==null && l!==undefined && l!=='' || l==='').join('\n').replace(/\n{3,}/g,'\n\n');
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+    ta.remove(); return ok;
+  }
+}
+
+/* ═════════ toast ═════════ */
+let toastTimer=null;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),2200);
+}
+
+/* ═════════ events ═════════ */
+$('parseBtn').addEventListener('click', ()=>{
+  const {rows,skipped}=parseLessons($('pasteBox').value, new Date().getFullYear());
+  if(rows.length){
+    state.lessons=state.lessons.concat(rows);
+    // dedupe exact date+time repeats from double-pastes
+    const seen=new Set();
+    state.lessons=state.lessons.filter(l=>{ const k=l.iso+'|'+l.timeText; if(seen.has(k)) return false; seen.add(k); return true; });
+    sortLessons(); renderRows(); $('pasteBox').value='';
+    toast(`Parsed ${rows.length} lesson${rows.length===1?'':'s'}`);
+  } else if(!skipped.length){ toast('Nothing to parse'); }
+  const sb=$('skippedBox');
+  if(skipped.length){ sb.style.display=''; sb.textContent='Couldn’t read these — add them manually:\n'+skipped.join('\n'); }
+  else sb.style.display='none';
+});
+$('sampleBtn').addEventListener('click', ()=>{
+  $('pasteBox').value=[
+    'Tuesday, July 7 ⋅ 4:00 – 6:00pm',
+    '14/7 1600 – 1730',
+    'Tue 21 Jul','4 – 5:30 PM',
+    '2026-07-28 10am to 12pm'
+  ].join('\n');
+});
+$('clearBtn').addEventListener('click', ()=>{
+  state.lessons=[]; $('pasteBox').value=''; $('skippedBox').style.display='none'; renderRows(); toast('Cleared');
+});
+$('addRowBtn').addEventListener('click', ()=>{
+  const today=new Date();
+  state.lessons.push({ iso:today.toISOString().slice(0,10), timeText:'4:00pm – 6:00pm', hours:2 });
+  renderRows();
+});
+$('rate').addEventListener('input', refreshTotals);
+['invNo','dueDate','subject','invNote'].forEach(id=>$(id).addEventListener('input', renderSheet));
+['invDate','billTo','student'].forEach(id=>$(id).addEventListener('input', refreshPayRefDefault));
+$('payRef').addEventListener('input', renderSheet);   // manual edit — leave state.payRefAuto as-is so future recomputes detect the override
+['tutorName','payNumber','defaultRate'].forEach(id=>$(id).addEventListener('input', ()=>{ saveSettings(); renderSheet(); }));
+$('defaultRate').addEventListener('change', ()=>{ if(!state.lessons.length) $('rate').value=$('defaultRate').value; refreshTotals(); });
+
+$('qrUploadBtn').addEventListener('click', ()=>$('qrFile').click());
+$('qrFile').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  if(f.size>4*1024*1024){ toast('Image too large — keep under 4 MB'); return; }
+  const r=new FileReader();
+  r.onload=async ()=>{ state.qr=r.result; await store.set('tj-qr', state.qr); showQrThumb(); renderSheet(); toast('QR saved'); };
+  r.readAsDataURL(f);
+  e.target.value='';
+});
+$('qrRemoveBtn').addEventListener('click', async ()=>{
+  state.qr=null; await store.del('tj-qr'); showQrThumb(); renderSheet(); toast('QR removed');
+});
+
+$('printBtn').addEventListener('click', async ()=>{ await bumpInvNoIfAuto(); window.print(); });
+$('waBtn').addEventListener('click', async ()=>{
+  toast(await copyText(waText()) ? 'WhatsApp summary copied' : 'Copy failed — select manually');
+});
+
+/* ═════════ init ═════════ */
+(async function init(){
+  $('invDate').value=new Date().toISOString().slice(0,10);
+  await loadSettings();
+  $('invNo').value=await suggestInvNo();
+  renderRows();          // renderRows → refreshTotals → refreshPayRefDefault, so payRef gets its first default here
+})();
+</script>
+</body>
+</html>

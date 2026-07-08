@@ -1,0 +1,17 @@
+{
+  "name": "tutorjulian-invoiceforge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TutorJulian invoice generator — paste calendar lessons, set a rate, generate a client-facing PayNow invoice.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
