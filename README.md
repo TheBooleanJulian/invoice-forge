@@ -1,8 +1,16 @@
-# TutorJulian · InvoiceForge
+# InvoiceForge · TutorJulian & Accurova
 
-Single-page invoice generator for TutorJulian gigs. Paste lesson dates/times
-copied from Google Calendar, set a rate, get a print-ready client invoice
-with a PayNow QR and auto-generated payment reference.
+Single-page invoice generator covering both businesses:
+
+- **TutorJulian** — paste lesson dates/times copied from Google Calendar,
+  set an hourly rate, get a print-ready client invoice.
+- **Accurova** — manual line items (description / qty / unit price) for
+  photography packages, add-ons, prints, travel fees, etc.
+
+Both share a Quotation / Invoice / Receipt toggle, PayNow QR + payment
+reference, and print-to-PDF output. Switch businesses with the toggle at
+the top of the sidebar — branding, field labels, settings, invoice
+numbering, and the item-entry UI all adapt automatically.
 
 The whole app is `public/index.html` — no build step, no framework.
 `server.js` is a thin Express wrapper that just serves that file, so
@@ -13,8 +21,15 @@ Zeabur's Node buildpack has a clean, unambiguous entrypoint.
 - Static HTML/CSS/JS (`public/index.html`)
 - Express static server (`server.js`) — Node ≥18
 - No database. Settings, PayNow QR, and invoice sequence numbers persist in
-  the browser's `localStorage`, scoped to whatever domain this ends up on.
-  That means data does **not** sync across devices/browsers yet.
+  the browser's `localStorage`, scoped to whatever domain this ends up on
+  — separately per business. That means data does **not** sync across
+  devices/browsers yet.
+
+## Invoice numbering
+
+Each business × doc-type combo gets its own sequence:
+`TJ-YYMM-###` / `TJ-Q-YYMM-###` / `TJ-R-YYMM-###` for TutorJulian, and
+`AC-YYMM-###` / `AC-Q-YYMM-###` / `AC-R-YYMM-###` for Accurova.
 
 ## Local dev
 
@@ -45,3 +60,4 @@ broken commit before Zeabur's own deploy webhook picks it up.
 - Auto-pull lessons from Google Calendar (currently manual paste-and-parse)
 - Invoice history / per-client saved profiles
 - Cross-device sync for settings + PayNow QR (currently per-browser `localStorage`)
+- Accurova: optional shoot-date field per line item (currently description/qty/price only)
