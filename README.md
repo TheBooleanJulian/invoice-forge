@@ -1,8 +1,8 @@
-# InvoiceForge · TutorJulian & Accurova
+# InvoiceForge · Upteach & Accurova
 
 Single-page invoice generator covering both businesses:
 
-- **TutorJulian** — paste lesson dates/times copied from Google Calendar,
+- **Upteach** — paste lesson dates/times copied from Google Calendar,
   set an hourly rate, get a print-ready client invoice.
 - **Accurova** — manual line items (description / qty / unit price) for
   photography packages, add-ons, prints, travel fees, etc.
@@ -28,7 +28,7 @@ Zeabur's Node buildpack has a clean, unambiguous entrypoint.
 ## Invoice numbering
 
 Each business × doc-type combo gets its own sequence:
-`TJ-YYMM-###` / `TJ-Q-YYMM-###` / `TJ-R-YYMM-###` for TutorJulian, and
+`UT-YYMM-###` / `UT-Q-YYMM-###` / `UT-R-YYMM-###` for Upteach, and
 `AC-YYMM-###` / `AC-Q-YYMM-###` / `AC-R-YYMM-###` for Accurova.
 
 ## Local dev
