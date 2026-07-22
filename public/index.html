@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InvoiceForge · TutorJulian & Accurova</title>
+<title>InvoiceForge · Upteach & Accurova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -141,8 +141,10 @@ input[type=file]{display:none}
 .sheet .t-line.grand .amt{font-size:24px;font-weight:700;color:var(--ink)}
 .sheet .pay{margin-top:40px;border:1px solid #d8dee2;border-radius:8px;padding:20px;display:flex;gap:22px;align-items:center;
   page-break-inside:avoid}
+.sheet .pay-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:7px;width:128px;flex-shrink:0}
 .sheet .pay .qr{width:128px;height:128px;flex-shrink:0;border:1px solid #e4e9ec;border-radius:6px;overflow:hidden;background:#fff}
 .sheet .pay .qr img{width:100%;height:100%;object-fit:contain}
+.sheet .qr-caption{font-size:11px;color:var(--ink-dim);text-align:center;line-height:1.35;max-width:128px}
 .sheet .pay-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--sheet-accent);font-weight:700;margin-bottom:9px}
 .sheet .pay-det{font-size:13.5px;line-height:1.8}
 .sheet .pay-det b{font-weight:700;font-family:var(--mono);font-size:14px}
@@ -183,7 +185,7 @@ input[type=file]{display:none}
 
 <div class="topbar">
   <span class="dot"></span>
-  <span class="brand" id="topbarBrand">TUTORJULIAN</span>
+  <span class="brand" id="topbarBrand">UPTEACH</span>
   <h1>InvoiceForge</h1>
   <span class="spacer"></span>
   <span class="hint" id="topbarHint">paste · parse · PayNow</span>
@@ -193,7 +195,7 @@ input[type=file]{display:none}
 <aside>
 
   <div class="venture-toggle" role="tablist" aria-label="Business">
-    <button type="button" data-venture="tutor" role="tab" class="active">TutorJulian</button>
+    <button type="button" data-venture="tutor" role="tab" class="active">Upteach</button>
     <button type="button" data-venture="accurova" role="tab">Accurova</button>
   </div>
 
@@ -225,6 +227,10 @@ input[type=file]{display:none}
           </div>
         </div>
         <input type="file" id="qrFile" accept="image/*">
+        <div style="margin-top:10px">
+          <label for="qrMessage">Message next to QR (optional)</label>
+          <input type="text" id="qrMessage" placeholder="e.g. Scan to pay instantly!" maxlength="80">
+        </div>
       </div>
     </div>
   </section>
@@ -525,18 +531,18 @@ const DOC_TYPES = {
 /* ═════════ businesses ═════════ */
 const VENTURES = {
   tutor:{
-    label:'TutorJulian', brandTop:'TUTOR', brandRest:'JULIAN', hint:'paste · parse · PayNow',
+    label:'Upteach', brandTop:'UP', brandRest:'TEACH', hint:'paste · parse · PayNow',
     tagline:'Private Tuition · Singapore', sec01:'My details', sec03:'Lessons',
     nameLabel:'Name on invoice', namePlaceholder:'Julian Cheung',
     rateLabel:'Default rate (S$/hr)', ratePlaceholder:'70',
     studentLabel:'Student (optional)', studentPlaceholder:'Kayden',
     subjectLabel:'Subject / level', subjectPlaceholder:'Sec 3 A-Math',
     studentSheetLabel:'Student',
-    docPrefixes:{quotation:'TJ-Q-', invoice:'TJ-', receipt:'TJ-R-'},
+    docPrefixes:{quotation:'UT-Q-', invoice:'UT-', receipt:'UT-R-'},
     settingsKey:'tj-settings', qrKey:'tj-qr',
     footerThanksByDoc:{
-      quotation:'Thank you for considering TutorJulian — happy to answer any questions.',
-      invoice:'Thank you for learning with TutorJulian.',
+      quotation:'Thank you for considering Upteach — happy to answer any questions.',
+      invoice:'Thank you for learning with Upteach.',
       receipt:'Thank you for your payment — see you at the next lesson!'
     }
   },
@@ -562,7 +568,7 @@ const VENTURES = {
 const state = {
   lessons: [],             // tutor items: {iso, timeText, hours}
   acItems: [],              // accurova items: {desc, qty, price}
-  settings: { tutorName:'', payNumber:'', defaultRate:'' },
+  settings: { tutorName:'', payNumber:'', defaultRate:'', qrMessage:'' },
   qr: null,
   payRefAuto: '',          // last auto-generated PayNow reference, used to detect manual edits
   docType: 'invoice',
@@ -577,20 +583,21 @@ function flashSaved(){ const f=$('savedFlash'); f.classList.add('on'); setTimeou
 function saveSettings(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async ()=>{
-    state.settings={ tutorName:$('tutorName').value, payNumber:$('payNumber').value, defaultRate:parseFloat($('defaultRate').value)||0 };
+    state.settings={ tutorName:$('tutorName').value, payNumber:$('payNumber').value, defaultRate:parseFloat($('defaultRate').value)||0, qrMessage:$('qrMessage').value };
     await store.set(VENTURES[state.venture].settingsKey, JSON.stringify(state.settings));
     flashSaved();
   },400);
 }
 async function loadSettings(venture){
   const cfg=VENTURES[venture];
-  state.settings={ tutorName:'', payNumber:'', defaultRate:'' };
+  state.settings={ tutorName:'', payNumber:'', defaultRate:'', qrMessage:'' };
   const raw=await store.get(cfg.settingsKey);
   if(raw){ try{ Object.assign(state.settings, JSON.parse(raw)); }catch(e){} }
   $('tutorName').value = state.settings.tutorName||'';
   $('payNumber').value = state.settings.payNumber||'';
   $('defaultRate').value = state.settings.defaultRate||'';
   $('rate').value = state.settings.defaultRate||'';
+  $('qrMessage').value = state.settings.qrMessage||'';
   state.qr=null;
   const q=await store.get(cfg.qrKey);
   if(q) state.qr=q;
@@ -744,6 +751,7 @@ function renderSheet(){
   const name=$('tutorName').value.trim()||vcfg.namePlaceholder;
   const phone=$('payNumber').value.trim();
   const payRef=$('payRef').value.trim()||invNo;
+  const qrMessage=$('qrMessage').value.trim();
 
   const rowsHtml = isAc
     ? (state.acItems.length ? state.acItems.map((it,i)=>`
@@ -785,7 +793,7 @@ function renderSheet(){
   } else {
     payBoxHtml = `
     <div class="pay">
-      ${state.qr?`<div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>`:''}
+      ${state.qr?`<div class="pay-qr-wrap"><div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>${qrMessage?`<div class="qr-caption">${esc(qrMessage)}</div>`:''}</div>`:''}
       <div>
         <div class="pay-title">PAYMENT · PAYNOW</div>
         <div class="pay-det">
@@ -869,7 +877,8 @@ function waText(){
   } else if(state.docType==='receipt'){
     paymentLines = [ `Paid via PayNow${phone?` (${phone})`:''}`, `Ref: ${payRef}`, `Received with thanks 🙏` ];
   } else {
-    paymentLines = [ `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`, `Ref: ${payRef}`, `Thank you! 🙏` ];
+    const qrMessage=$('qrMessage').value.trim();
+    paymentLines = [ `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`, `Ref: ${payRef}`, qrMessage||'', `Thank you! 🙏` ];
   }
 
   return [
@@ -936,7 +945,7 @@ $('rate').addEventListener('input', refreshTotals);
 ['invNo','dueDate','subject','invNote'].forEach(id=>$(id).addEventListener('input', renderSheet));
 ['invDate','billTo','student'].forEach(id=>$(id).addEventListener('input', refreshPayRefDefault));
 $('payRef').addEventListener('input', renderSheet);   // manual edit — leave state.payRefAuto as-is so future recomputes detect the override
-['tutorName','payNumber','defaultRate'].forEach(id=>$(id).addEventListener('input', ()=>{ saveSettings(); renderSheet(); }));
+['tutorName','payNumber','defaultRate','qrMessage'].forEach(id=>$(id).addEventListener('input', ()=>{ saveSettings(); renderSheet(); }));
 $('defaultRate').addEventListener('change', ()=>{ if(!state.lessons.length) $('rate').value=$('defaultRate').value; refreshTotals(); });
 
 $('qrUploadBtn').addEventListener('click', ()=>$('qrFile').click());
