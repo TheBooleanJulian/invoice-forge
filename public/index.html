@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TutorJulian · InvoiceForge</title>
+<title>InvoiceForge · Upteach & Accurova</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,17 +13,19 @@
   --teal:#00D4C8; --teal-dim:rgba(0,212,200,.14); --gold:#F5C842;
   --txt:#dbe4ea; --txt-dim:#7d8b96; --ink:#151a1f; --ink-dim:#5a6570;
   --mono:'JetBrains Mono',ui-monospace,monospace; --sans:'Space Grotesk',system-ui,sans-serif;
+  --accent: var(--teal); --accent-ink:#031514; --sheet-accent:#00b5ab;
 }
+body[data-venture="accurova"]{ --accent: var(--gold); --accent-ink:#241a02; --sheet-accent:#b8860b; }
 *{box-sizing:border-box;margin:0;padding:0}
 html{color-scheme:dark}
 body{background:var(--void);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.5;min-height:100vh}
-::selection{background:var(--teal);color:#031514}
+::selection{background:var(--accent);color:var(--accent-ink)}
 
 /* ── app chrome ── */
 .topbar{display:flex;align-items:baseline;gap:14px;padding:18px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(5,5,8,.92);backdrop-filter:blur(8px);z-index:20}
-.topbar .brand{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--teal);font-weight:700}
+.topbar .brand{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--accent);font-weight:700}
 .topbar h1{font-size:19px;font-weight:700;letter-spacing:-.01em}
-.topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal);align-self:center}
+.topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);align-self:center}
 .topbar .spacer{flex:1}
 .topbar .hint{font-family:var(--mono);font-size:11px;color:var(--txt-dim)}
 
@@ -35,8 +37,26 @@ aside{border-right:1px solid var(--line);padding:22px 24px 60px;overflow-y:auto;
 /* ── control sections ── */
 section{margin-bottom:26px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
 section>.sec-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
-.sec-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--teal);font-weight:700}
+.sec-head .tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--accent);font-weight:700}
 .sec-head h2{font-size:14px;font-weight:500;color:var(--txt)}
+
+/* ── venture toggle ── */
+.venture-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;
+  border:1px solid var(--line);border-radius:10px;padding:5px;background:var(--panel)}
+.venture-toggle button{border:none;background:transparent;color:var(--txt-dim);font-family:var(--sans);
+  font-size:13px;font-weight:700;padding:11px 6px;border-radius:7px}
+.venture-toggle button:hover{color:var(--txt)}
+.venture-toggle button.active{background:var(--accent);color:var(--accent-ink)}
+.venture-toggle button.active:hover{color:var(--accent-ink)}
+
+/* ── doc-type toggle ── */
+.doctype-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:22px;
+  border:1px solid var(--line);border-radius:10px;padding:5px;background:var(--panel)}
+.doctype-toggle button{border:none;background:transparent;color:var(--txt-dim);font-family:var(--mono);
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:10px 6px;border-radius:7px;font-weight:700}
+.doctype-toggle button:hover{color:var(--txt);border-color:transparent}
+.doctype-toggle button.active{background:var(--accent);color:var(--accent-ink)}
+.doctype-toggle button.active:hover{color:var(--accent-ink)}
 .sec-body{padding:16px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field{margin-bottom:12px}
@@ -45,15 +65,15 @@ label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
 input[type=text],input[type=date],input[type=number],textarea{
   width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--txt);
   font-family:var(--sans);font-size:14px;padding:9px 11px;transition:border-color .15s}
-input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 textarea{font-family:var(--mono);font-size:12.5px;line-height:1.7;min-height:130px;resize:vertical}
 input::placeholder,textarea::placeholder{color:#46525c}
 .mono-in{font-family:var(--mono)!important;font-size:13px!important}
 
 button{font-family:var(--sans);font-size:13.5px;font-weight:500;border-radius:7px;border:1px solid var(--line);
   background:var(--panel-2);color:var(--txt);padding:9px 15px;cursor:pointer;transition:all .15s}
-button:hover{border-color:var(--teal);color:var(--teal)}
-button.primary{background:var(--teal);border-color:var(--teal);color:#031514;font-weight:700}
+button:hover{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 button.primary:hover{background:#2ee6db;color:#031514}
 button.ghost{background:transparent}
 button.tiny{padding:4px 9px;font-size:12px;font-family:var(--mono)}
@@ -76,12 +96,15 @@ input[type=file]{display:none}
 .row-line .del:hover{color:#ff6b6b}
 .rows-head{display:grid;grid-template-columns:118px 1fr 62px 28px;gap:7px;font-family:var(--mono);font-size:9.5px;
   letter-spacing:.12em;text-transform:uppercase;color:#46525c;margin-top:14px}
+.ac-row-line{grid-template-columns:1fr 52px 78px 28px}
+.ac-row-line input[type=text]{font-family:var(--sans)}
+.ac-rows-head{grid-template-columns:1fr 52px 78px 28px}
 .skipped{margin-top:12px;border:1px solid rgba(245,200,66,.3);background:rgba(245,200,66,.06);border-radius:7px;
   padding:10px 12px;font-family:var(--mono);font-size:11.5px;color:var(--gold);white-space:pre-wrap}
 .summary-line{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;
   align-items:baseline;font-family:var(--mono);font-size:12.5px;color:var(--txt-dim)}
-.summary-line strong{color:var(--teal);font-size:16px;font-weight:700}
-.saved-flash{font-family:var(--mono);font-size:10.5px;color:var(--teal);opacity:0;transition:opacity .3s}
+.summary-line strong{color:var(--accent);font-size:16px;font-weight:700}
+.saved-flash{font-family:var(--mono);font-size:10.5px;color:var(--accent);opacity:0;transition:opacity .3s}
 .saved-flash.on{opacity:1}
 
 /* ── invoice sheet ── */
@@ -91,13 +114,13 @@ input[type=file]{display:none}
   padding:58px 62px;font-family:var(--sans);flex-shrink:0}
 .sheet .inv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .sheet .wordmark{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.2em;color:var(--ink)}
-.sheet .wordmark .t{color:#00b5ab}
+.sheet .wordmark .t{color:var(--sheet-accent)}
 .sheet .from-block{margin-top:10px;font-size:12.5px;color:var(--ink-dim);line-height:1.65}
 .sheet .from-block .nm{color:var(--ink);font-weight:500}
 .sheet .inv-label{font-size:34px;font-weight:700;letter-spacing:.04em;text-align:right;line-height:1}
 .sheet .inv-meta{margin-top:12px;font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--ink-dim);line-height:1.9}
 .sheet .inv-meta b{color:var(--ink);font-weight:500}
-.sheet hr.rule{border:none;border-top:2px solid #00b5ab;margin:22px 0 0}
+.sheet hr.rule{border:none;border-top:2px solid var(--sheet-accent);margin:22px 0 0}
 .sheet .bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:20px 0;border-bottom:1px solid #e4e9ec}
 .sheet .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#9aa6af;margin-bottom:5px}
 .sheet .v{font-size:15px;font-weight:500}
@@ -113,14 +136,16 @@ input[type=file]{display:none}
 .sheet .totals{display:flex;justify-content:flex-end;margin-top:18px}
 .sheet .totals-box{width:290px}
 .sheet .t-line{display:flex;justify-content:space-between;padding:6px 10px;font-size:12.5px;color:var(--ink-dim);font-family:var(--mono)}
-.sheet .t-line.grand{border-top:2px solid #00b5ab;margin-top:8px;padding-top:12px;align-items:baseline}
+.sheet .t-line.grand{border-top:2px solid var(--sheet-accent);margin-top:8px;padding-top:12px;align-items:baseline}
 .sheet .t-line.grand .lbl{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
 .sheet .t-line.grand .amt{font-size:24px;font-weight:700;color:var(--ink)}
 .sheet .pay{margin-top:40px;border:1px solid #d8dee2;border-radius:8px;padding:20px;display:flex;gap:22px;align-items:center;
   page-break-inside:avoid}
+.sheet .pay-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:7px;width:128px;flex-shrink:0}
 .sheet .pay .qr{width:128px;height:128px;flex-shrink:0;border:1px solid #e4e9ec;border-radius:6px;overflow:hidden;background:#fff}
 .sheet .pay .qr img{width:100%;height:100%;object-fit:contain}
-.sheet .pay-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#00b5ab;font-weight:700;margin-bottom:9px}
+.sheet .qr-caption{font-size:11px;color:var(--ink-dim);text-align:center;line-height:1.35;max-width:128px}
+.sheet .pay-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--sheet-accent);font-weight:700;margin-bottom:9px}
 .sheet .pay-det{font-size:13.5px;line-height:1.8}
 .sheet .pay-det b{font-weight:700;font-family:var(--mono);font-size:14px}
 .sheet .pay-note{font-size:11.5px;color:var(--ink-dim);margin-top:8px}
@@ -131,7 +156,7 @@ input[type=file]{display:none}
 
 /* ── toast ── */
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--panel);
-  border:1px solid var(--teal);color:var(--teal);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:8px;
+  border:1px solid var(--accent);color:var(--accent);font-family:var(--mono);font-size:12px;padding:10px 18px;border-radius:8px;
   opacity:0;pointer-events:none;transition:all .25s;z-index:60}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -156,28 +181,39 @@ input[type=file]{display:none}
 }
 </style>
 </head>
-<body>
+<body data-venture="tutor">
 
 <div class="topbar">
   <span class="dot"></span>
-  <span class="brand">TUTORJULIAN</span>
+  <span class="brand" id="topbarBrand">UPTEACH</span>
   <h1>InvoiceForge</h1>
   <span class="spacer"></span>
-  <span class="hint">paste · parse · PayNow</span>
+  <span class="hint" id="topbarHint">paste · parse · PayNow</span>
 </div>
 
 <div class="layout">
 <aside>
 
+  <div class="venture-toggle" role="tablist" aria-label="Business">
+    <button type="button" data-venture="tutor" role="tab" class="active">Upteach</button>
+    <button type="button" data-venture="accurova" role="tab">Accurova</button>
+  </div>
+
+  <div class="doctype-toggle" role="tablist" aria-label="Document type">
+    <button type="button" data-type="quotation" role="tab">Quotation</button>
+    <button type="button" data-type="invoice" role="tab" class="active">Invoice</button>
+    <button type="button" data-type="receipt" role="tab">Receipt</button>
+  </div>
+
   <!-- 01 · my details -->
   <section>
-    <div class="sec-head"><span class="tag">01</span><h2>My details</h2><span class="spacer" style="flex:1"></span><span class="saved-flash" id="savedFlash">saved ✓</span></div>
+    <div class="sec-head"><span class="tag">01</span><h2 id="sec01Title">My details</h2><span class="spacer" style="flex:1"></span><span class="saved-flash" id="savedFlash">saved ✓</span></div>
     <div class="sec-body">
       <div class="grid2">
-        <div class="field"><label for="tutorName">Name on invoice</label><input type="text" id="tutorName" placeholder="Julian Cheung"></div>
+        <div class="field"><label for="tutorName" id="tutorNameLabel">Name on invoice</label><input type="text" id="tutorName" placeholder="Julian Cheung"></div>
         <div class="field"><label for="payNumber">PayNow mobile</label><input type="text" id="payNumber" class="mono-in" placeholder="+65 9XXX XXXX"></div>
       </div>
-      <div class="field"><label for="defaultRate">Default rate (S$/hr)</label><input type="number" id="defaultRate" class="mono-in" min="0" step="5" placeholder="70" style="width:130px"></div>
+      <div class="field"><label for="defaultRate" id="defaultRateLabel">Default rate (S$/hr)</label><input type="number" id="defaultRate" class="mono-in" min="0" step="5" placeholder="70" style="width:130px"></div>
       <div class="field">
         <label>PayNow QR (JPG/PNG)</label>
         <div class="qr-zone">
@@ -191,57 +227,73 @@ input[type=file]{display:none}
           </div>
         </div>
         <input type="file" id="qrFile" accept="image/*">
+        <div style="margin-top:10px">
+          <label for="qrMessage">Message next to QR (optional)</label>
+          <input type="text" id="qrMessage" placeholder="e.g. Scan to pay instantly!" maxlength="80">
+        </div>
       </div>
     </div>
   </section>
 
   <!-- 02 · this invoice -->
   <section>
-    <div class="sec-head"><span class="tag">02</span><h2>This invoice</h2></div>
+    <div class="sec-head"><span class="tag">02</span><h2 id="sec02Title">This invoice</h2></div>
     <div class="sec-body">
       <div class="grid2">
-        <div class="field"><label for="invNo">Invoice no.</label><input type="text" id="invNo" class="mono-in"></div>
-        <div class="field"><label for="invDate">Invoice date</label><input type="date" id="invDate" class="mono-in"></div>
+        <div class="field"><label for="invNo" id="invNoLabel">Invoice no.</label><input type="text" id="invNo" class="mono-in"></div>
+        <div class="field"><label for="invDate" id="invDateLabel">Invoice date</label><input type="date" id="invDate" class="mono-in"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label for="billTo">Bill to (parent / client)</label><input type="text" id="billTo" placeholder="Mrs Tan"></div>
-        <div class="field"><label for="dueDate">Due date (optional)</label><input type="date" id="dueDate" class="mono-in"></div>
+        <div class="field"><label for="billTo" id="billToLabel">Bill to (parent / client)</label><input type="text" id="billTo" placeholder="Mrs Tan"></div>
+        <div class="field"><label for="dueDate" id="dueDateLabel">Due date (optional)</label><input type="date" id="dueDate" class="mono-in"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label for="student">Student (optional)</label><input type="text" id="student" placeholder="Kayden"></div>
-        <div class="field"><label for="subject">Subject / level</label><input type="text" id="subject" placeholder="Sec 3 A-Math"></div>
+        <div class="field"><label for="student" id="studentLabel">Student (optional)</label><input type="text" id="student" placeholder="Kayden"></div>
+        <div class="field"><label for="subject" id="subjectLabel">Subject / level</label><input type="text" id="subject" placeholder="Sec 3 A-Math"></div>
       </div>
-      <div class="field"><label for="invNote">Note on invoice (optional)</label><input type="text" id="invNote" placeholder="e.g. July lessons · materials included"></div>
-      <div class="field">
+      <div class="field"><label for="invNote" id="invNoteLabel">Note on invoice (optional)</label><input type="text" id="invNote" placeholder="e.g. July lessons · materials included"></div>
+      <div class="field" id="payRefField">
         <label for="payRef">PayNow reference <span style="text-transform:none;opacity:.7">(auto-fills, editable)</span></label>
         <input type="text" id="payRef" class="mono-in" placeholder="e.g. Kayden2607">
       </div>
     </div>
   </section>
 
-  <!-- 03 · lessons -->
+  <!-- 03 · items -->
   <section>
-    <div class="sec-head"><span class="tag">03</span><h2>Lessons</h2></div>
+    <div class="sec-head"><span class="tag">03</span><h2 id="sec03Title">Lessons</h2></div>
     <div class="sec-body">
-      <div class="field">
-        <label for="pasteBox">Paste from Google Calendar</label>
-        <textarea id="pasteBox" placeholder="One lesson per line, e.g.&#10;Tuesday, July 7 ⋅ 4:00 – 6:00pm&#10;14/7 1600 – 1730&#10;21 Jul&#10;4 – 5:30 PM&#10;&#10;A date on its own line applies to the time lines below it."></textarea>
+
+      <div id="tutorItemsPanel">
+        <div class="field">
+          <label for="pasteBox">Paste from Google Calendar</label>
+          <textarea id="pasteBox" placeholder="One lesson per line, e.g.&#10;Tuesday, July 7 ⋅ 4:00 – 6:00pm&#10;14/7 1600 – 1730&#10;21 Jul&#10;4 – 5:30 PM&#10;&#10;A date on its own line applies to the time lines below it."></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="primary" id="parseBtn">Parse lessons</button>
+          <button id="sampleBtn">Load sample</button>
+          <button class="ghost" id="clearBtn">Clear all</button>
+        </div>
+        <div class="skipped" id="skippedBox" style="display:none"></div>
+
+        <div class="field" style="margin-top:16px"><label for="rate">Rate for this invoice (S$/hr)</label>
+          <input type="number" id="rate" class="mono-in" min="0" step="5" style="width:130px"></div>
+
+        <div class="rows-head"><span>Date</span><span>Time</span><span>Hrs</span><span></span></div>
+        <div class="rows" id="rowsBox"></div>
+        <div class="btn-row"><button class="tiny" id="addRowBtn">+ Add lesson manually</button></div>
+
+        <div class="summary-line"><span id="sumLessons">0 lessons · 0 h</span><strong id="sumTotal">S$0.00</strong></div>
       </div>
-      <div class="btn-row">
-        <button class="primary" id="parseBtn">Parse lessons</button>
-        <button id="sampleBtn">Load sample</button>
-        <button class="ghost" id="clearBtn">Clear all</button>
+
+      <div id="accurovaItemsPanel" style="display:none">
+        <div class="rows-head ac-rows-head"><span>Description</span><span>Qty</span><span>Unit S$</span><span></span></div>
+        <div class="rows" id="acRowsBox"></div>
+        <div class="btn-row"><button class="tiny" id="acAddRowBtn">+ Add line item</button></div>
+
+        <div class="summary-line"><span id="acSumItems">0 items</span><strong id="acSumTotal">S$0.00</strong></div>
       </div>
-      <div class="skipped" id="skippedBox" style="display:none"></div>
 
-      <div class="field" style="margin-top:16px"><label for="rate">Rate for this invoice (S$/hr)</label>
-        <input type="number" id="rate" class="mono-in" min="0" step="5" style="width:130px"></div>
-
-      <div class="rows-head"><span>Date</span><span>Time</span><span>Hrs</span><span></span></div>
-      <div class="rows" id="rowsBox"></div>
-      <div class="btn-row"><button class="tiny" id="addRowBtn">+ Add lesson manually</button></div>
-
-      <div class="summary-line"><span id="sumLessons">0 lessons · 0 h</span><strong id="sumTotal">S$0.00</strong></div>
     </div>
   </section>
 
@@ -457,35 +509,99 @@ function money(n){ return 'S$' + (Math.round(n*100)/100).toLocaleString('en-SG',
 function hrs(n){ return (Math.round(n*100)/100).toString(); }
 function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+/* ═════════ document types ═════════ */
+const DOC_TYPES = {
+  quotation:{ title:'QUOTATION', sec02:'This quotation',
+    invNoLabel:'Quote no.', invDateLabel:'Quote date', dueLabel:'Valid until (optional)',
+    billLabel:'Quoted to (parent / client)', noteLabel:'Note on quotation (optional)',
+    billLabelSheet:'Quoted to', dueLabelSheet:'Valid until', totalLabel:'Estimated total',
+    waHeader:'Quotation', waTotalWord:'Estimated total' },
+  invoice:{ title:'INVOICE', sec02:'This invoice',
+    invNoLabel:'Invoice no.', invDateLabel:'Invoice date', dueLabel:'Due date (optional)',
+    billLabel:'Bill to (parent / client)', noteLabel:'Note on invoice (optional)',
+    billLabelSheet:'Billed to', dueLabelSheet:'Due', totalLabel:'Total due',
+    waHeader:'Invoice', waTotalWord:'Total' },
+  receipt:{ title:'RECEIPT', sec02:'This receipt',
+    invNoLabel:'Receipt no.', invDateLabel:'Receipt date', dueLabel:'Date paid (optional)',
+    billLabel:'Received from (parent / client)', noteLabel:'Note on receipt (optional)',
+    billLabelSheet:'Received from', dueLabelSheet:'Paid on', totalLabel:'Total paid',
+    waHeader:'Receipt', waTotalWord:'Amount received' }
+};
+
+/* ═════════ businesses ═════════ */
+const VENTURES = {
+  tutor:{
+    label:'Upteach', brandTop:'UP', brandRest:'TEACH', hint:'paste · parse · PayNow',
+    tagline:'Private Tuition · Singapore', sec01:'My details', sec03:'Lessons',
+    nameLabel:'Name on invoice', namePlaceholder:'Julian Cheung',
+    rateLabel:'Default rate (S$/hr)', ratePlaceholder:'70',
+    studentLabel:'Student (optional)', studentPlaceholder:'Kayden',
+    subjectLabel:'Subject / level', subjectPlaceholder:'Sec 3 A-Math',
+    studentSheetLabel:'Student',
+    docPrefixes:{quotation:'UT-Q-', invoice:'UT-', receipt:'UT-R-'},
+    settingsKey:'tj-settings', qrKey:'tj-qr',
+    footerThanksByDoc:{
+      quotation:'Thank you for considering Upteach — happy to answer any questions.',
+      invoice:'Thank you for learning with Upteach.',
+      receipt:'Thank you for your payment — see you at the next lesson!'
+    }
+  },
+  accurova:{
+    label:'Accurova', brandTop:'ACCU', brandRest:'ROVA', hint:'shoots · packages · PayNow',
+    tagline:'Premium Photography & Digital Media · Singapore', sec01:'My details', sec03:'Line items',
+    nameLabel:'Business name on invoice', namePlaceholder:'Accurova',
+    rateLabel:'Default item price (S$)', ratePlaceholder:'800',
+    studentLabel:'Event / shoot (optional)', studentPlaceholder:'Tan-Lim Wedding',
+    subjectLabel:'Package (optional)', subjectPlaceholder:'Full Day Coverage + Album',
+    studentSheetLabel:'Event / Shoot',
+    docPrefixes:{quotation:'AC-Q-', invoice:'AC-', receipt:'AC-R-'},
+    settingsKey:'ac-settings', qrKey:'ac-qr',
+    footerThanksByDoc:{
+      quotation:'Thank you for considering Accurova — happy to answer any questions before you confirm.',
+      invoice:'Thank you for choosing Accurova.',
+      receipt:'Thank you for your payment — it was a pleasure capturing your moments!'
+    }
+  }
+};
+
 /* ═════════ state ═════════ */
 const state = {
-  lessons: [],            // {iso, timeText, hours}
-  settings: { tutorName:'Julian Cheung', payNumber:'', defaultRate:70 },
+  lessons: [],             // tutor items: {iso, timeText, hours}
+  acItems: [],              // accurova items: {desc, qty, price}
+  settings: { tutorName:'', payNumber:'', defaultRate:'', qrMessage:'' },
   qr: null,
-  payRefAuto: ''          // last auto-generated PayNow reference, used to detect manual edits
+  payRefAuto: '',          // last auto-generated PayNow reference, used to detect manual edits
+  docType: 'invoice',
+  venture: 'tutor',
+  invNoAuto: ''            // last auto-generated doc number, used to detect manual edits
 };
 const $ = id => document.getElementById(id);
 
-/* ═════════ settings persistence ═════════ */
+/* ═════════ settings persistence (per venture) ═════════ */
 let saveTimer=null;
 function flashSaved(){ const f=$('savedFlash'); f.classList.add('on'); setTimeout(()=>f.classList.remove('on'),1200); }
 function saveSettings(){
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async ()=>{
-    state.settings={ tutorName:$('tutorName').value, payNumber:$('payNumber').value, defaultRate:parseFloat($('defaultRate').value)||0 };
-    await store.set('tj-settings', JSON.stringify(state.settings));
+    state.settings={ tutorName:$('tutorName').value, payNumber:$('payNumber').value, defaultRate:parseFloat($('defaultRate').value)||0, qrMessage:$('qrMessage').value };
+    await store.set(VENTURES[state.venture].settingsKey, JSON.stringify(state.settings));
     flashSaved();
   },400);
 }
-async function loadSettings(){
-  const raw=await store.get('tj-settings');
+async function loadSettings(venture){
+  const cfg=VENTURES[venture];
+  state.settings={ tutorName:'', payNumber:'', defaultRate:'', qrMessage:'' };
+  const raw=await store.get(cfg.settingsKey);
   if(raw){ try{ Object.assign(state.settings, JSON.parse(raw)); }catch(e){} }
   $('tutorName').value = state.settings.tutorName||'';
   $('payNumber').value = state.settings.payNumber||'';
   $('defaultRate').value = state.settings.defaultRate||'';
   $('rate').value = state.settings.defaultRate||'';
-  const q=await store.get('tj-qr');
-  if(q){ state.qr=q; showQrThumb(); }
+  $('qrMessage').value = state.settings.qrMessage||'';
+  state.qr=null;
+  const q=await store.get(cfg.qrKey);
+  if(q) state.qr=q;
+  showQrThumb();
 }
 function showQrThumb(){
   const t=$('qrThumb');
@@ -493,28 +609,38 @@ function showQrThumb(){
   else { t.classList.add('empty'); t.textContent='no QR yet'; $('qrRemoveBtn').style.display='none'; }
 }
 
-/* ═════════ invoice number ═════════ */
-async function suggestInvNo(){
+/* ═════════ document number ═════════ */
+function seqStorageKey(venture, type, ym){ return `seq-${venture}-${type}-${ym}`; }
+async function suggestInvNo(venture, type){
+  const prefix=VENTURES[venture].docPrefixes[type];
   const now=new Date();
   const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
-  const raw = await store.get('tj-seq-'+ym);
+  const raw = await store.get(seqStorageKey(venture,type,ym));
   const seq = (parseInt(raw||'0',10)||0)+1;
-  return `TJ-${ym}-${String(seq).padStart(3,'0')}`;
+  return `${prefix}${ym}-${String(seq).padStart(3,'0')}`;
 }
 async function bumpInvNoIfAuto(){
+  const prefix=VENTURES[state.venture].docPrefixes[state.docType];
   const now=new Date();
   const ym = String(now.getFullYear()).slice(2)+String(now.getMonth()+1).padStart(2,'0');
-  const m = new RegExp(`^TJ-${ym}-(\\d{3})$`).exec($('invNo').value.trim());
-  if(m) await store.set('tj-seq-'+ym, String(parseInt(m[1],10)));
+  const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const m = new RegExp(`^${escapedPrefix}${ym}-(\\d{3})$`).exec($('invNo').value.trim());
+  if(m) await store.set(seqStorageKey(state.venture,state.docType,ym), String(parseInt(m[1],10)));
+}
+async function refreshInvNoDefault(){
+  const field=$('invNo');
+  const newAuto=await suggestInvNo(state.venture, state.docType);
+  if(field.value.trim()==='' || field.value.trim()===state.invNoAuto){ field.value=newAuto; }
+  state.invNoAuto=newAuto;
 }
 
-/* ═════════ PayNow reference: <Student><YY><MM><DD if single lesson> ═════════ */
+/* ═════════ PayNow reference: <Client><YY><MM><DD if a single tutor lesson> ═════════ */
 function computePayRef(){
-  const student=$('student').value.trim().replace(/[^a-zA-Z0-9]/g,'') || $('billTo').value.trim().replace(/[^a-zA-Z0-9]/g,'') || 'Tuition';
+  const client=$('student').value.trim().replace(/[^a-zA-Z0-9]/g,'') || $('billTo').value.trim().replace(/[^a-zA-Z0-9]/g,'') || (state.venture==='accurova'?'Shoot':'Tuition');
   let y,mo,d=null;
-  if(state.lessons.length===1){
+  if(state.venture==='tutor' && state.lessons.length===1){
     [y,mo,d]=state.lessons[0].iso.split('-').map(Number);
-  } else if(state.lessons.length>1){
+  } else if(state.venture==='tutor' && state.lessons.length>1){
     [y,mo]=state.lessons[0].iso.split('-').map(Number);   // multiple lessons → month only, no single day
   } else if($('invDate').value){
     [y,mo,d]=$('invDate').value.split('-').map(Number);
@@ -522,7 +648,7 @@ function computePayRef(){
     const now=new Date(); y=now.getFullYear(); mo=now.getMonth()+1;
   }
   const yy=String(y).slice(2), mm=String(mo).padStart(2,'0');
-  return student + yy + mm + (d?String(d).padStart(2,'0'):'');
+  return client + yy + mm + (d?String(d).padStart(2,'0'):'');
 }
 function refreshPayRefDefault(){
   const field=$('payRef');
@@ -572,63 +698,102 @@ function refreshTotals(){
   refreshPayRefDefault();
 }
 
+/* ═════════ Accurova line-items UI ═════════ */
+function renderAcRows(){
+  const box=$('acRowsBox'); box.innerHTML='';
+  state.acItems.forEach((it,i)=>{
+    const div=document.createElement('div'); div.className='row-line ac-row-line';
+    div.innerHTML=`
+      <input type="text" value="${esc(it.desc)}" data-i="${i}" data-f="desc" placeholder="Full-day wedding coverage" aria-label="Item description">
+      <input type="number" value="${it.qty}" min="0" step="1" data-i="${i}" data-f="qty" aria-label="Quantity">
+      <input type="number" value="${it.price}" min="0" step="10" data-i="${i}" data-f="price" aria-label="Unit price">
+      <button class="del" data-i="${i}" title="Remove item" aria-label="Remove item">✕</button>`;
+    box.appendChild(div);
+  });
+  refreshAcTotals();
+}
+$('acRowsBox').addEventListener('input', e=>{
+  const i=+e.target.dataset.i, f=e.target.dataset.f;
+  if(f==='desc') state.acItems[i].desc=e.target.value;
+  else if(f==='qty') state.acItems[i].qty=parseFloat(e.target.value)||0;
+  else if(f==='price') state.acItems[i].price=parseFloat(e.target.value)||0;
+  refreshAcTotals();
+});
+$('acRowsBox').addEventListener('click', e=>{
+  if(e.target.classList.contains('del')){ state.acItems.splice(+e.target.dataset.i,1); renderAcRows(); }
+});
+$('acAddRowBtn').addEventListener('click', ()=>{
+  const defaultPrice=parseFloat($('defaultRate').value)||0;
+  state.acItems.push({ desc:'', qty:1, price:defaultPrice });
+  renderAcRows();
+});
+function refreshAcTotals(){
+  const totalQty=state.acItems.reduce((a,it)=>a+(it.qty||0),0);
+  const total=state.acItems.reduce((a,it)=>a+(it.qty||0)*(it.price||0),0);
+  $('acSumItems').textContent=`${state.acItems.length} item${state.acItems.length===1?'':'s'} · ${hrs(totalQty)} qty`;
+  $('acSumTotal').textContent=money(total);
+  refreshPayRefDefault();
+}
+
 /* ═════════ invoice sheet ═════════ */
 function renderSheet(){
+  const cfg=DOC_TYPES[state.docType];
+  const vcfg=VENTURES[state.venture];
+  const isAc=state.venture==='accurova';
   const s=state.settings, rate=parseFloat($('rate').value)||0;
   const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
-  const total=totalH*rate;
+  const total = isAc ? state.acItems.reduce((a,it)=>a+(it.qty||0)*(it.price||0),0) : totalH*rate;
   const invNo=$('invNo').value.trim()||'—';
   const invDate=$('invDate').value?fmtDateISO($('invDate').value):'—';
-  const due=$('dueDate').value?fmtDateISO($('dueDate').value):'Upon receipt';
+  const due=$('dueDate').value?fmtDateISO($('dueDate').value):(state.docType==='invoice'?'Upon receipt':'—');
   const billTo=$('billTo').value.trim(), student=$('student').value.trim(), subject=$('subject').value.trim();
   const note=$('invNote').value.trim();
-  const name=$('tutorName').value.trim()||'Julian Cheung';
+  const name=$('tutorName').value.trim()||vcfg.namePlaceholder;
   const phone=$('payNumber').value.trim();
   const payRef=$('payRef').value.trim()||invNo;
+  const qrMessage=$('qrMessage').value.trim();
 
-  const rowsHtml = state.lessons.length ? state.lessons.map((L,i)=>`
-      <tr><td class="idx">${String(i+1).padStart(2,'0')}</td>
-      <td>${fmtDateISO(L.iso)}</td>
-      <td class="mono">${esc(L.timeText)}</td>
-      <td class="mono r">${hrs(L.hours)}</td>
-      <td class="mono r">${money(L.hours*rate)}</td></tr>`).join('')
-    : `<tr class="empty-row"><td colspan="5">No lessons yet — paste your calendar entries and hit Parse.</td></tr>`;
+  const rowsHtml = isAc
+    ? (state.acItems.length ? state.acItems.map((it,i)=>`
+        <tr><td class="idx">${String(i+1).padStart(2,'0')}</td>
+        <td colspan="2">${esc(it.desc)||'—'}</td>
+        <td class="mono r">${hrs(it.qty)}</td>
+        <td class="mono r">${money(it.qty*it.price)}</td></tr>`).join('')
+      : `<tr class="empty-row"><td colspan="5">No line items yet — add a package, print, or add-on below.</td></tr>`)
+    : (state.lessons.length ? state.lessons.map((L,i)=>`
+        <tr><td class="idx">${String(i+1).padStart(2,'0')}</td>
+        <td>${fmtDateISO(L.iso)}</td>
+        <td class="mono">${esc(L.timeText)}</td>
+        <td class="mono r">${hrs(L.hours)}</td>
+        <td class="mono r">${money(L.hours*rate)}</td></tr>`).join('')
+      : `<tr class="empty-row"><td colspan="5">No lessons yet — paste your calendar entries and hit Parse.</td></tr>`);
 
-  $('sheet').innerHTML=`
-    <div class="inv-top">
-      <div>
-        <div class="wordmark"><span class="t">TUTOR</span>JULIAN</div>
-        <div class="from-block">
-          <span class="nm">${esc(name)}</span><br>
-          Private Tuition · Singapore${phone?`<br>${esc(phone)}`:''}
-        </div>
-      </div>
-      <div>
-        <div class="inv-label">INVOICE</div>
-        <div class="inv-meta">
-          No. <b>${esc(invNo)}</b><br>
-          Date <b>${invDate}</b><br>
-          Due <b>${due}</b>
-        </div>
-      </div>
-    </div>
-    <hr class="rule">
-    <div class="bill-grid">
-      <div><div class="k">Billed to</div><div class="v">${esc(billTo)||'—'}</div></div>
-      <div><div class="k">Student</div><div class="v">${esc(student)||'—'}${subject?`<small>${esc(subject)}</small>`:''}</div></div>
-    </div>
-    <table>
-      <thead><tr><th></th><th>Date</th><th>Time</th><th class="r">Hours</th><th class="r">Amount</th></tr></thead>
-      <tbody>${rowsHtml}</tbody>
-    </table>
-    <div class="totals"><div class="totals-box">
-      <div class="t-line"><span>Total hours</span><span>${hrs(totalH)} h</span></div>
-      <div class="t-line"><span>Rate</span><span>${money(rate)} / h</span></div>
-      <div class="t-line grand"><span class="lbl">Total due</span><span class="amt">${money(total)}</span></div>
-    </div></div>
-    ${note?`<div class="notes">${esc(note)}</div>`:''}
+  let payBoxHtml;
+  if(state.docType==='quotation'){
+    payBoxHtml = `
     <div class="pay">
-      ${state.qr?`<div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>`:''}
+      <div>
+        <div class="pay-title">VALIDITY</div>
+        <div class="pay-det">This quotation is valid until <b>${due==='—'?'further notice':due}</b>.</div>
+        <div class="pay-note">Rates, scheduling and availability are not guaranteed after this date. Happy to confirm and convert this to an invoice once you're ready to proceed.</div>
+      </div>
+    </div>`;
+  } else if(state.docType==='receipt'){
+    payBoxHtml = `
+    <div class="pay">
+      <div>
+        <div class="pay-title">PAYMENT · RECEIVED WITH THANKS</div>
+        <div class="pay-det">
+          Paid via PayNow${phone?` · <b>${esc(phone)}</b>`:''}<br>
+          Reference <b>${esc(payRef)}</b>
+        </div>
+        <div class="pay-note">Received on <b>${due==='—'?invDate:due}</b>. This receipt confirms payment in full for the ${isAc?'items':'lessons'} listed above.</div>
+      </div>
+    </div>`;
+  } else {
+    payBoxHtml = `
+    <div class="pay">
+      ${state.qr?`<div class="pay-qr-wrap"><div class="qr"><img src="${state.qr}" alt="PayNow QR code"></div>${qrMessage?`<div class="qr-caption">${esc(qrMessage)}</div>`:''}</div>`:''}
       <div>
         <div class="pay-title">PAYMENT · PAYNOW</div>
         <div class="pay-det">
@@ -637,35 +802,95 @@ function renderSheet(){
         </div>
         <div class="pay-note">Please include <b>${esc(payRef)}</b> in the PayNow reference${state.qr?', or scan the QR code':''}.</div>
       </div>
+    </div>`;
+  }
+
+  const brandFull = `${vcfg.brandTop}${vcfg.brandRest}`;
+  const tableHead = isAc
+    ? `<tr><th></th><th colspan="2">Description</th><th class="r">Qty</th><th class="r">Amount</th></tr>`
+    : `<tr><th></th><th>Date</th><th>Time</th><th class="r">Hours</th><th class="r">Amount</th></tr>`;
+  const totalsSubHtml = isAc
+    ? `<div class="t-line"><span>Line items</span><span>${state.acItems.length}</span></div>`
+    : `<div class="t-line"><span>Total hours</span><span>${hrs(totalH)} h</span></div>
+       <div class="t-line"><span>Rate</span><span>${money(rate)} / h</span></div>`;
+
+  $('sheet').innerHTML=`
+    <div class="inv-top">
+      <div>
+        <div class="wordmark"><span class="t">${esc(vcfg.brandTop)}</span>${esc(vcfg.brandRest)}</div>
+        <div class="from-block">
+          <span class="nm">${esc(name)}</span><br>
+          ${esc(vcfg.tagline)}${phone?`<br>${esc(phone)}`:''}
+        </div>
+      </div>
+      <div>
+        <div class="inv-label">${cfg.title}</div>
+        <div class="inv-meta">
+          No. <b>${esc(invNo)}</b><br>
+          Date <b>${invDate}</b><br>
+          ${esc(cfg.dueLabelSheet)} <b>${due}</b>
+        </div>
+      </div>
     </div>
+    <hr class="rule">
+    <div class="bill-grid">
+      <div><div class="k">${esc(cfg.billLabelSheet)}</div><div class="v">${esc(billTo)||'—'}</div></div>
+      <div><div class="k">${esc(vcfg.studentSheetLabel)}</div><div class="v">${esc(student)||'—'}${subject?`<small>${esc(subject)}</small>`:''}</div></div>
+    </div>
+    <table>
+      <thead>${tableHead}</thead>
+      <tbody>${rowsHtml}</tbody>
+    </table>
+    <div class="totals"><div class="totals-box">
+      ${totalsSubHtml}
+      <div class="t-line grand"><span class="lbl">${esc(cfg.totalLabel)}</span><span class="amt">${money(total)}</span></div>
+    </div></div>
+    ${note?`<div class="notes">${esc(note)}</div>`:''}
+    ${payBoxHtml}
     <div class="foot">
-      <span class="thanks">Thank you for learning with TutorJulian.</span>
-      <span class="mark">TUTORJULIAN · ${esc(invNo)}</span>
+      <span class="thanks">${esc(vcfg.footerThanksByDoc[state.docType])}</span>
+      <span class="mark">${esc(brandFull)} · ${esc(invNo)}</span>
     </div>`;
 }
 
 /* ═════════ whatsapp summary ═════════ */
 function waText(){
+  const cfg=DOC_TYPES[state.docType];
+  const vcfg=VENTURES[state.venture];
+  const isAc=state.venture==='accurova';
   const rate=parseFloat($('rate').value)||0;
   const totalH=state.lessons.reduce((a,l)=>a+(l.hours||0),0);
+  const total = isAc ? state.acItems.reduce((a,it)=>a+(it.qty||0)*(it.price||0),0) : totalH*rate;
   const invNo=$('invNo').value.trim();
   const payRef=$('payRef').value.trim()||invNo;
-  const name=$('tutorName').value.trim()||'Julian Cheung';
+  const name=$('tutorName').value.trim()||vcfg.namePlaceholder;
   const phone=$('payNumber').value.trim();
   const student=$('student').value.trim(), subject=$('subject').value.trim();
-  const lines=state.lessons.map(L=>`• ${fmtDateISO(L.iso)}, ${L.timeText} — ${hrs(L.hours)}h`);
+  const due=$('dueDate').value?fmtDateISO($('dueDate').value):null;
+  const lines = isAc
+    ? state.acItems.map(it=>`• ${it.desc||'Item'} x${hrs(it.qty)} — ${money(it.qty*it.price)}`)
+    : state.lessons.map(L=>`• ${fmtDateISO(L.iso)}, ${L.timeText} — ${hrs(L.hours)}h`);
+
+  let paymentLines;
+  if(state.docType==='quotation'){
+    paymentLines = [ due?`Valid until: ${due}`:'', `Let me know if you'd like to go ahead!` ];
+  } else if(state.docType==='receipt'){
+    paymentLines = [ `Paid via PayNow${phone?` (${phone})`:''}`, `Ref: ${payRef}`, `Received with thanks 🙏` ];
+  } else {
+    const qrMessage=$('qrMessage').value.trim();
+    paymentLines = [ `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`, `Ref: ${payRef}`, qrMessage||'', `Thank you! 🙏` ];
+  }
+
   return [
-    `*TutorJulian — Invoice ${invNo}*`,
-    student?`Student: ${student}${subject?` (${subject})`:''}`:'' ,
+    `*${vcfg.label} — ${cfg.waHeader} ${invNo}*`,
+    student?`${vcfg.studentSheetLabel}: ${student}${subject?` (${subject})`:''}`:'' ,
     ``,
-    `Lessons:`,
+    isAc ? `Items:` : `Lessons:`,
     ...lines,
     ``,
-    `Total: ${hrs(totalH)}h × ${money(rate)}/h = *${money(totalH*rate)}*`,
+    isAc ? `${cfg.waTotalWord}: *${money(total)}*` : `${cfg.waTotalWord}: ${hrs(totalH)}h × ${money(rate)}/h = *${money(total)}*`,
     ``,
-    `PayNow: ${phone||'(mobile)'}${name?` (${name})`:''}`,
-    `Ref: ${payRef}`,
-    `Thank you! 🙏`
+    ...paymentLines
   ].filter(l=>l!==null && l!==undefined && l!=='' || l==='').join('\n').replace(/\n{3,}/g,'\n\n');
 }
 async function copyText(t){
@@ -720,7 +945,7 @@ $('rate').addEventListener('input', refreshTotals);
 ['invNo','dueDate','subject','invNote'].forEach(id=>$(id).addEventListener('input', renderSheet));
 ['invDate','billTo','student'].forEach(id=>$(id).addEventListener('input', refreshPayRefDefault));
 $('payRef').addEventListener('input', renderSheet);   // manual edit — leave state.payRefAuto as-is so future recomputes detect the override
-['tutorName','payNumber','defaultRate'].forEach(id=>$(id).addEventListener('input', ()=>{ saveSettings(); renderSheet(); }));
+['tutorName','payNumber','defaultRate','qrMessage'].forEach(id=>$(id).addEventListener('input', ()=>{ saveSettings(); renderSheet(); }));
 $('defaultRate').addEventListener('change', ()=>{ if(!state.lessons.length) $('rate').value=$('defaultRate').value; refreshTotals(); });
 
 $('qrUploadBtn').addEventListener('click', ()=>$('qrFile').click());
@@ -728,12 +953,60 @@ $('qrFile').addEventListener('change', e=>{
   const f=e.target.files[0]; if(!f) return;
   if(f.size>4*1024*1024){ toast('Image too large — keep under 4 MB'); return; }
   const r=new FileReader();
-  r.onload=async ()=>{ state.qr=r.result; await store.set('tj-qr', state.qr); showQrThumb(); renderSheet(); toast('QR saved'); };
+  r.onload=async ()=>{ state.qr=r.result; await store.set(VENTURES[state.venture].qrKey, state.qr); showQrThumb(); renderSheet(); toast('QR saved'); };
   r.readAsDataURL(f);
   e.target.value='';
 });
 $('qrRemoveBtn').addEventListener('click', async ()=>{
-  state.qr=null; await store.del('tj-qr'); showQrThumb(); renderSheet(); toast('QR removed');
+  state.qr=null; await store.del(VENTURES[state.venture].qrKey); showQrThumb(); renderSheet(); toast('QR removed');
+});
+
+/* ═════════ venture toggle ═════════ */
+async function applyVenture(venture){
+  state.venture = venture;
+  const vcfg = VENTURES[venture];
+  document.body.dataset.venture = venture;
+  document.querySelectorAll('.venture-toggle button').forEach(b=> b.classList.toggle('active', b.dataset.venture===venture));
+  $('topbarBrand').textContent = vcfg.label.toUpperCase();
+  $('topbarHint').textContent = vcfg.hint;
+  $('sec01Title').textContent = vcfg.sec01;
+  $('sec03Title').textContent = vcfg.sec03;
+  $('tutorNameLabel').textContent = vcfg.nameLabel;
+  $('tutorName').placeholder = vcfg.namePlaceholder;
+  $('defaultRateLabel').textContent = vcfg.rateLabel;
+  $('defaultRate').placeholder = vcfg.ratePlaceholder;
+  $('studentLabel').textContent = vcfg.studentLabel;
+  $('student').placeholder = vcfg.studentPlaceholder;
+  $('subjectLabel').textContent = vcfg.subjectLabel;
+  $('subject').placeholder = vcfg.subjectPlaceholder;
+  $('tutorItemsPanel').style.display = venture==='tutor' ? '' : 'none';
+  $('accurovaItemsPanel').style.display = venture==='accurova' ? '' : 'none';
+  await loadSettings(venture);
+  await refreshInvNoDefault();
+  renderRows();
+  renderAcRows();
+}
+document.querySelectorAll('.venture-toggle button').forEach(b=>{
+  b.addEventListener('click', ()=>applyVenture(b.dataset.venture));
+});
+
+/* ═════════ doc-type toggle ═════════ */
+async function applyDocType(type){
+  state.docType = type;
+  const cfg = DOC_TYPES[type];
+  document.querySelectorAll('.doctype-toggle button').forEach(b=> b.classList.toggle('active', b.dataset.type===type));
+  $('sec02Title').textContent = cfg.sec02;
+  $('invNoLabel').textContent = cfg.invNoLabel;
+  $('invDateLabel').textContent = cfg.invDateLabel;
+  $('billToLabel').textContent = cfg.billLabel;
+  $('dueDateLabel').textContent = cfg.dueLabel;
+  $('invNoteLabel').textContent = cfg.noteLabel;
+  $('payRefField').style.display = (type==='quotation') ? 'none' : '';   // nothing to pay yet on a quotation
+  await refreshInvNoDefault();
+  renderSheet();
+}
+document.querySelectorAll('.doctype-toggle button').forEach(b=>{
+  b.addEventListener('click', ()=>applyDocType(b.dataset.type));
 });
 
 $('printBtn').addEventListener('click', async ()=>{ await bumpInvNoIfAuto(); window.print(); });
@@ -744,9 +1017,8 @@ $('waBtn').addEventListener('click', async ()=>{
 /* ═════════ init ═════════ */
 (async function init(){
   $('invDate').value=new Date().toISOString().slice(0,10);
-  await loadSettings();
-  $('invNo').value=await suggestInvNo();
-  renderRows();          // renderRows → refreshTotals → refreshPayRefDefault, so payRef gets its first default here
+  await applyVenture('tutor');
+  await applyDocType('invoice');
 })();
 </script>
 </body>
