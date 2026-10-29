@@ -1,0 +1,17 @@
+// Cloudflare Workers Builds: build command `npm run build` (blank if none), deploy command `npx wrangler deploy`.
+{
+  "name": "invoice-forge",
+  "account_id": "c580c4403524273d1bece674117472dd",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [
+    {
+      "pattern": "invoice-forge.thebooleanjulian.dev",
+      "custom_domain": true
+    }
+  ]
+}
